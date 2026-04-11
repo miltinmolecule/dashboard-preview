@@ -1,0 +1,10 @@
+{
+  "APP_NAME": "FleexyTrip Super Admin",
+  "APP_VERSION": "1.0.0",
+  "DEFAULT_PAGE_SIZE": 20,
+  "DATE_FORMAT": "MMM dd, yyyy",
+  "DATETIME_FORMAT": "MMM dd, yyyy HH:mm",
+  "CURRENCY": "NGN",
+  "CURRENCY_SYMBOL": "₦",
+  "SESSION_TIMEOUT_MINUTES": 60
+}
