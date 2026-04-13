@@ -23,19 +23,18 @@ export const authConfig: NextAuthConfig = {
 
         try {
           const { data } = await axios.post(API_URLS.AUTH.LOGIN, {
-            email: parsed.data.email,
+            login: parsed.data.email,
             password: parsed.data.password,
           });
 
+          const { accessToken, refreshToken, ...rest} = data.data;
+
           return {
-            id: data.user.id,
-            name: data.user.name,
-            email: data.user.email,
-            role: data.user.role,
-            accessToken: data.accessToken,
-            refreshToken: data.refreshToken,
+            ...rest,
+            accessToken,
+            refreshToken,
           };
-        } catch {
+        } catch(error) {
           return null;
         }
       },

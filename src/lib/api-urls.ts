@@ -3,10 +3,10 @@ const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/v1";
 export const API_URLS = {
   // Auth
   AUTH: {
-    LOGIN: `${BASE}/auth/login`,
-    LOGOUT: `${BASE}/auth/logout`,
-    REFRESH: `${BASE}/auth/refresh`,
-    ME: `${BASE}/auth/me`,
+    LOGIN: `${BASE}/login`,
+    LOGOUT: `${BASE}/logout`,
+    REFRESH: `${BASE}/refresh`,
+    ME: `${BASE}/me`,
   },
 
   // Dashboard

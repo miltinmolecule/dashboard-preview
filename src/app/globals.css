@@ -2,7 +2,29 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #fff;
+  --primary: #1C4F60;
+  --primaryTint: #41b3d8;
+  --text: #64748b;
+  --inputBorder: #64748b;
+  --appGray: #64748b;
+  --appGrayText: #888e95;
+  --gray-one: #f8f9fa;
+  --gray-two: #f2f3f5;
+  --gray-three: #ebedef;
+  --gray-five: #d0d4da;
+  --input-bg: "#F8FAFC";
+  --gray-nine: #353a40;
+  --defaultText: #353a40;
+  --grayBg: #f3f2f3;
+  --yellow: #f3ae43;
+  --warning: #f3ae43;
+  --red: #e05e36;
+  --error: #e05e36;
+  --green: #1b832c;
+  --success: #519d68;
+  --lightGray: #f1f5f9;
+  --white: #ffffff;
 }
 
 @theme inline {

@@ -37,7 +37,7 @@ export default function LoginView(): React.ReactNode {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-blue-950 to-slate-900">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -69,7 +69,6 @@ export default function LoginView(): React.ReactNode {
               </label>
               <input
                 id="email"
-                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={cn(
@@ -78,8 +77,6 @@ export default function LoginView(): React.ReactNode {
                   "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 )}
                 placeholder="admin@fleexy.com"
-                required
-                autoComplete="email"
               />
             </div>
 
