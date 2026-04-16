@@ -1,6 +1,7 @@
 import StatusBadge from "@/shared/common/StatusBadge";
 import SimplePagination from "./SimplePagination";
 import type { TransactionRecord } from "./types";
+import CardWrapper from "../cards/CardWrapper";
 
 interface TransactionsContentProps {
   transactions: TransactionRecord[];
@@ -40,7 +41,7 @@ export default function TransactionsContent({
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+      <CardWrapper>
         <h2 className="text-base font-semibold text-gray-900 mb-5">Transaction History</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -67,7 +68,7 @@ export default function TransactionsContent({
           </table>
         </div>
         <SimplePagination totalPages={Math.ceil(transactions.length / 10) || 1} />
-      </div>
+      </CardWrapper>
     </div>
   );
 }

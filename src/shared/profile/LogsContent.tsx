@@ -1,10 +1,11 @@
 import StatusBadge from "@/shared/common/StatusBadge";
 import SimplePagination from "./SimplePagination";
 import type { LogRecord } from "./types";
+import CardWrapper from "../cards/CardWrapper";
 
 export default function LogsContent({ logs }: { logs: LogRecord[] }): React.ReactNode {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+    <CardWrapper>
       <h2 className="text-base font-semibold text-gray-900 mb-5">User Logs</h2>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -30,6 +31,6 @@ export default function LogsContent({ logs }: { logs: LogRecord[] }): React.Reac
         </table>
       </div>
       <SimplePagination totalPages={Math.ceil(logs.length / 10) || 1} />
-    </div>
+    </CardWrapper>
   );
 }
