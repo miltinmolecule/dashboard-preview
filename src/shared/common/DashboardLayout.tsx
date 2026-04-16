@@ -12,7 +12,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps): Rea
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-foreground">
       <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />

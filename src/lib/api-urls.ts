@@ -1,4 +1,4 @@
-const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/v1";
+const BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const API_URLS = {
   // Auth
@@ -32,6 +32,9 @@ export const API_URLS = {
     APPROVE: (id: string) => `${BASE}/drivers/${id}/approve`,
     REJECT: (id: string) => `${BASE}/drivers/${id}/reject`,
     SUSPEND: (id: string) => `${BASE}/drivers/${id}/suspend`,
+    REACTIVATE: (id: string) => `${BASE}/drivers/${id}/reactivate`,
+    BULK_APPROVE: `${BASE}/drivers/bulk-approve`,
+    BULK_SUSPEND: `${BASE}/drivers/bulk-suspend`,
   },
 
   // Rides

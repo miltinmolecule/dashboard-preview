@@ -4,7 +4,7 @@ const api: AxiosInstance = axios.create({
   baseURL:
     typeof window === "undefined"
       ? process.env.INTERNAL_API_BASE_URL
-      : (process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/v1"),
+      : (process.env.NEXT_PUBLIC_API_BASE_URL),
   headers: {
     "Content-Type": "application/json",
   },
