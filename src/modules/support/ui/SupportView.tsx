@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/shared/common/DataTable";
 import StatusBadge from "@/shared/common/StatusBadge";
@@ -38,6 +38,20 @@ const PRIORITY_ORDER: Record<string, number> = {
   low: 3,
 };
 
+const PRIORITY_COLOR: Record<string, string> = {
+  critical: "text-red-700 bg-red-50 border-red-200",
+  high: "text-orange-700 bg-orange-50 border-orange-200",
+  medium: "text-amber-700 bg-amber-50 border-amber-200",
+  low: "text-gray-600 bg-gray-100 border-gray-200",
+};
+
+const PRIORITY_BADGE: Record<string, string> = {
+  critical: "bg-red-50 text-red-700 border border-red-200",
+  high: "bg-orange-50 text-orange-700 border border-orange-200",
+  medium: "bg-amber-50 text-amber-700 border border-amber-200",
+  low: "bg-gray-100 text-gray-600 border border-gray-200",
+};
+
 
 const exportToCsv = (rows: SupportTicket[], filename: string): void => {
   const headers = ["ID", "User", "Email", "Type", "Priority", "Status", "Assigned", "Created"];
@@ -70,13 +84,17 @@ function TicketDetailModal({
   onAssign: (id: string, admin: string) => void;
 }): React.ReactNode {
   const [assignOpen, setAssignOpen] = useState(false);
+  const assignRef = useRef<HTMLDivElement>(null);
 
-  const priorityColor: Record<string, string> = {
-    critical: "text-red-700 bg-red-50 border-red-200",
-    high: "text-orange-700 bg-orange-50 border-orange-200",
-    medium: "text-amber-700 bg-amber-50 border-amber-200",
-    low: "text-gray-600 bg-gray-100 border-gray-200",
-  };
+  useEffect(() => {
+    const handleClick = (e: MouseEvent): void => {
+      if (assignRef.current && !assignRef.current.contains(e.target as Node)) {
+        setAssignOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   return (
     <ModalWrapper open onClose={onClose} size="lg">
@@ -86,7 +104,7 @@ function TicketDetailModal({
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="text-base font-semibold text-gray-900">{ticket.id}</h3>
             <StatusBadge status={ticket.status} />
-            <span className={cn("inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize", priorityColor[ticket.priority])}>
+            <span className={cn("inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize", PRIORITY_COLOR[ticket.priority])}>
               {ticket.priority}
             </span>
           </div>
@@ -147,7 +165,7 @@ function TicketDetailModal({
             Escalate
           </button>
         )}
-        <div className="relative">
+        <div ref={assignRef} className="relative">
           <button
             onClick={() => setAssignOpen((o) => !o)}
             className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
@@ -230,13 +248,6 @@ export default function SupportView(): React.ReactNode {
     if (selectedTicket?.id === id) {
       setSelectedTicket((prev) => prev ? { ...prev, assignedAdmin: admin, status: prev.status === "open" ? "in_progress" : prev.status } : prev);
     }
-  };
-
-  const PRIORITY_BADGE: Record<string, string> = {
-    critical: "bg-red-50 text-red-700 border border-red-200",
-    high: "bg-orange-50 text-orange-700 border border-orange-200",
-    medium: "bg-amber-50 text-amber-700 border border-amber-200",
-    low: "bg-gray-100 text-gray-600 border border-gray-200",
   };
 
   const columns: ColumnDef<SupportTicket, unknown>[] = [
