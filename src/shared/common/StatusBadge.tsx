@@ -12,7 +12,13 @@ type BadgeVariant =
   | "in_progress"
   | "failed"
   | "flagged"
-  | "deleted";
+  | "deleted"
+  | "resolved"
+  | "closed"
+  | "dismissed"
+  | "open"
+  | "reviewing"
+  | "escalated";
 
 interface StatusBadgeProps {
   status: BadgeVariant | string;
