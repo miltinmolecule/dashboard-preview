@@ -1,12 +1,21 @@
 export type TicketPriority = "low" | "medium" | "high" | "critical";
 export type TicketStatus = "open" | "in_progress" | "resolved" | "escalated" | "closed";
 
+export type TicketComplaintType =
+  | "Payment Issue"
+  | "Driver Conduct"
+  | "App Bug"
+  | "Lost Item"
+  | "Safety Concern"
+  | "Account Access"
+  | "Promo Code";
+
 export interface SupportTicket {
   id: string;
   userId: string;
   userName: string;
   userEmail: string;
-  complaintType: string;
+  complaintType: TicketComplaintType;
   priority: TicketPriority;
   status: TicketStatus;
   createdAt: string;
