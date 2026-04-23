@@ -360,7 +360,7 @@ export default function PaymentsView(): React.ReactNode {
               onClick={() => setActiveTab(tab.key)}
               className={cn(
                 "rounded-lg px-4 py-1.5 text-xs font-medium transition-all",
-                activeTab === tab.key ? "bg-blue-600 text-white shadow-sm" : "text-gray-500 hover:bg-gray-50"
+                activeTab === tab.key ? "bg-[var(--primary)] text-white shadow-sm" : "text-gray-500 hover:bg-gray-50"
               )}
             >
               {tab.label}

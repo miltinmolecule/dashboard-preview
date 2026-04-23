@@ -9,7 +9,7 @@ import FilterDropdown from "@/shared/forms/FilterDropdown";
 import ModalWrapper from "@/shared/modals/ModalWrapper";
 import DashboardHeader from "@/shared/cards/DashboardHeader";
 import { cn } from "@/utils/cn";
-import type { Complaint, DisputeStatus } from "../services/complaints.service";
+import type { Complaint, DisputeStatus, DisputeComplaintType } from "../services/complaints.service";
 import { MOCK_COMPLAINTS } from "../services/complaints.service";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -27,7 +27,7 @@ const PRIORITY_FILTERS = [
   { label: "High", value: "high" },
 ];
 
-const TYPE_FILTERS = [
+const TYPE_FILTERS: { label: string; value: DisputeComplaintType }[] = [
   { label: "Fare Dispute", value: "Fare Dispute" },
   { label: "Driver Misconduct", value: "Driver Misconduct" },
   { label: "Safety Incident", value: "Safety Incident" },
@@ -86,6 +86,7 @@ function ComplaintDetailModal({
         </div>
         <button
           onClick={onClose}
+          aria-label="Close"
           className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -402,7 +402,7 @@ function DriverProfileModal({
           {driver.accountStatus === "suspended" && (
             <button
               onClick={() => onAction(driver.id, "reactivate")}
-              className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+              className="rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
             >
               Reactivate
             </button>
@@ -899,7 +899,7 @@ export default function DriversView(): React.ReactNode {
           message:
             "This will reactivate the driver and allow them to start accepting trips again.",
           confirmLabel: "Reactivate",
-          confirmClass: "bg-blue-600 hover:bg-blue-700",
+          confirmClass: "bg-[var(--primary)] hover:bg-blue-700",
         },
       }[confirm.action]
     : null;
