@@ -44,6 +44,20 @@ export const API_URLS = {
     CANCEL: (id: string) => `${BASE}/rides/${id}/cancel`,
   },
 
+    // Vehicles
+  VEHICLES: {
+    LIST: `${BASE}/vehicles`,
+    DETAIL: (id: string) => `${BASE}/vehicles/${id}`,
+    APPROVE: (id: string) => `${BASE}/vehicles/${id}/approve`,
+    REJECT: (id: string) => `${BASE}/vehicles/${id}/reject`,
+    SUSPEND: (id: string) => `${BASE}/vehicles/${id}/suspend`,
+    REACTIVATE: (id: string) => `${BASE}/vehicles/${id}/reactivate`,
+    BULK_APPROVE: `${BASE}/vehicles/bulk-approve`,
+    BULK_SUSPEND: `${BASE}/vehicles/bulk-suspend`,
+    DOCUMENTS: (id: string, docType: string) => `${BASE}/vehicles/${id}/documents/${docType}`,
+    DRIVER_HISTORY: (id: string) => `${BASE}/vehicles/${id}/driver-history`,
+  },
+  
   // Payments
   PAYMENTS: {
     LIST: `${BASE}/payments`,
