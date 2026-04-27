@@ -33,7 +33,7 @@ export default function BulkActionBar({
       )}
     >
       <div className="flex items-center gap-2 mr-auto">
-        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-blue-600 px-2 text-xs font-bold text-white">
+        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-[var(--primary)] px-2 text-xs font-bold text-white">
           {selectedCount}
         </span>
         <span className="text-sm font-medium text-blue-900">

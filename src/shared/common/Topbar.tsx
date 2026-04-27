@@ -66,7 +66,7 @@ export default function Topbar(): React.ReactNode {
             onClick={() => setMenuOpen((o) => !o)}
             className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-50 transition-colors"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-xs font-bold text-white">
               {session?.user?.name?.charAt(0)?.toUpperCase() ?? "A"}
             </div>
             <div className="hidden md:block text-left">

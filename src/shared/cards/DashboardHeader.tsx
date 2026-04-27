@@ -1,10 +1,9 @@
-import { Driver } from "@/modules/drivers/services/drivers.service";
-import React from "react";
+import type { ReactNode } from "react";
 
 interface DashboardHeaderProps {
   title: string;
   description?: string;
-  breadcrumbs?: React.ReactNode;
+  breadcrumbs?: ReactNode;
   onExportToCsv?: () => void;
 }
 

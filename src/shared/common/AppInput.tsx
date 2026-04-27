@@ -1,3 +1,4 @@
+import { cn } from "@/utils/cn";
 import { ChangeEvent } from "react";
 
 interface PrefixProps {
@@ -6,6 +7,7 @@ interface PrefixProps {
 }
 
 interface AppInputProps extends PrefixProps {
+  id?: string;
   name?: string;
   label?: string;
   placeholder?: string;
@@ -57,6 +59,7 @@ const AppInput = ({
     >
       {label && (
         <label
+          htmlFor={name}
           className="text-sm flex mb-2 
         "
         >
@@ -65,7 +68,7 @@ const AppInput = ({
       )}
       <div
         className={`flex items-center justify-between ${
-          startContent || endContent ? "px-2" : "px-4"
+          startContent || endContent ? "px-2" : "px-0"
         } bg-[#F8FAFC] rounded-lg ${
           inputRender === "normal" ? "h-11.25" : "min-h-12"
         } border border-(--inputBorder)/30 ${inputWrapper}`}
@@ -83,9 +86,12 @@ const AppInput = ({
             disabled={isDisabled}
             readOnly={readonly}
             rows={rows || 5}
-            className={`flex-1 text-sm pt-2 font-normal h-full outline-none border-0 ${inputClass} ${
-              startContent || endContent ? "px-2" : "px-0"
-            }`}
+            className={cn(
+              "flex-1 text-sm pt-2 font-normal h-full outline-none  placeholder:text-gray-400 text-gray-900 border-0 ",
+              inputClass,
+              startContent || endContent ? "px-2" : "px-0",
+              "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all",
+            )}
           ></textarea>
         ) : (
           <input
@@ -98,9 +104,12 @@ const AppInput = ({
             readOnly={readonly}
             onBlur={onBlur}
             onChange={onChange}
-            className={`flex-1 text-sm font-normal h-full outline-none border-0 ${inputClass} ${
-              startContent || endContent ? "px-2" : "px-0"
-            }`}
+            className={cn(
+              "flex-1 text-sm font-normal h-full outline-none border-0 placeholder:text-gray-400 text-gray-900",
+              inputClass,
+              startContent || endContent ? "px-2" : "px-5",
+              // "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all",
+            )}
             max={type === "date" ? maxDate : undefined}
             min={type === "date" ? minDate : undefined}
             {...props}

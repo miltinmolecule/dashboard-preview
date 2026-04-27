@@ -145,7 +145,7 @@ function TripDetailModal({
                   <div className="flex flex-col items-center">
                     <div className={cn(
                       "flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-bold",
-                      done ? "border-blue-600 bg-blue-600 text-white" : "border-gray-200 bg-white text-gray-300",
+                      done ? "border-blue-600 bg-[var(--primary)] text-white" : "border-gray-200 bg-white text-gray-300",
                       active && "ring-2 ring-blue-200"
                     )}>
                       {done ? (

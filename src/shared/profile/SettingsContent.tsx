@@ -1,4 +1,5 @@
 import { cn } from "@/utils/cn";
+import CardWrapper from "../cards/CardWrapper";
 
 const SETTINGS = [
   { label: "Email Notifications", description: "Receive notifications about trips and payments", enabled: true },
@@ -9,7 +10,7 @@ const SETTINGS = [
 
 export default function SettingsContent(): React.ReactNode {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+    <CardWrapper>
       <h2 className="text-base font-semibold text-gray-900 mb-5">Settings</h2>
       <div className="space-y-1">
         {SETTINGS.map((s) => (
@@ -24,6 +25,6 @@ export default function SettingsContent(): React.ReactNode {
           </div>
         ))}
       </div>
-    </div>
+    </CardWrapper>
   );
 }

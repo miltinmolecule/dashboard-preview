@@ -37,7 +37,7 @@ const SEGMENT_USER_LABELS: Record<string, string> = {
 type UserTypeProp = "driver" | "user";
 
 function getNavItems(id: string, userType: UserTypeProp): ProfileNavItem[] {
-  return userType === "driver"
+  return userType === "user"
     ? [
         {
           label: "Personal Info",

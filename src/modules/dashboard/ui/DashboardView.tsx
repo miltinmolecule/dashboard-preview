@@ -104,7 +104,7 @@ export default function DashboardView(): React.ReactNode {
               className={cn(
                 "rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
                 filter === f.value
-                  ? "bg-blue-600 text-white shadow-sm"
+                  ? "bg-[var(--primary)] text-white shadow-sm"
                   : "text-gray-500 hover:bg-gray-50"
               )}
             >

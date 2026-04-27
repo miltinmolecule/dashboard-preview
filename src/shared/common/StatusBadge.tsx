@@ -12,7 +12,13 @@ type BadgeVariant =
   | "in_progress"
   | "failed"
   | "flagged"
-  | "deleted";
+  | "deleted"
+  | "resolved"
+  | "closed"
+  | "dismissed"
+  | "open"
+  | "reviewing"
+  | "escalated";
 
 interface StatusBadgeProps {
   status: BadgeVariant | string;
@@ -24,14 +30,20 @@ const VARIANT_CLASSES: Record<string, string> = {
   active: "bg-emerald-50 text-emerald-700 border-emerald-200",
   approved: "bg-emerald-50 text-emerald-700 border-emerald-200",
   completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  resolved: "bg-emerald-50 text-emerald-700 border-emerald-200",
   inactive: "bg-gray-100 text-gray-600 border-gray-200",
   deleted: "bg-gray-100 text-gray-600 border-gray-200",
+  closed: "bg-gray-100 text-gray-600 border-gray-200",
+  dismissed: "bg-gray-100 text-gray-600 border-gray-200",
   pending: "bg-amber-50 text-amber-700 border-amber-200",
+  open: "bg-blue-50 text-blue-700 border-blue-200",
   in_progress: "bg-blue-50 text-blue-700 border-blue-200",
+  reviewing: "bg-blue-50 text-blue-700 border-blue-200",
   suspended: "bg-red-50 text-red-700 border-red-200",
   rejected: "bg-red-50 text-red-700 border-red-200",
   cancelled: "bg-red-50 text-red-700 border-red-200",
   failed: "bg-red-50 text-red-700 border-red-200",
+  escalated: "bg-orange-50 text-orange-700 border-orange-200",
   flagged: "bg-orange-50 text-orange-700 border-orange-200",
 };
 

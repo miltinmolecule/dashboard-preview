@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/utils/cn";
 import type { ActivityItem, ActivityType } from "./types";
+import CardWrapper from "../cards/CardWrapper";
 
 type Filter = "all" | "trip" | "payment" | "profile";
 
@@ -47,7 +48,7 @@ export default function ActivityContent({ activities }: { activities: ActivityIt
   }, {});
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+    <CardWrapper>
       <h2 className="text-base font-semibold text-gray-900 mb-4">Activity Overview</h2>
 
       <div className="flex items-center gap-2 mb-6">
@@ -91,6 +92,6 @@ export default function ActivityContent({ activities }: { activities: ActivityIt
           <p className="text-center py-8 text-sm text-gray-400">No activity found.</p>
         )}
       </div>
-    </div>
+    </CardWrapper>
   );
 }
