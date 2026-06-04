@@ -35,8 +35,16 @@ export interface UserFilters {
   limit?: number;
 }
 
-export const fetchUsers = async (filters: UserFilters): Promise<PaginatedResponse<Rider>> => {
-  const { data } = await api.get<ApiResponse<PaginatedResponse<Rider>>>(API_URLS.USERS.LIST, {
+export interface UsersPage {
+  items: Rider[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
+
+export const fetchUsers = async (filters: UserFilters): Promise<UsersPage> => {
+  const { data } = await api.get<ApiResponse<UsersPage>>(API_URLS.USERS.LIST, {
     params: filters,
   });
   return data.data;

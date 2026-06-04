@@ -12,207 +12,12 @@ import ModalWrapper from "@/shared/modals/ModalWrapper";
 import { cn } from "@/utils/cn";
 import type { Rider, RiderTrip } from "../services/users.service";
 import DashboardHeader from "@/shared/cards/DashboardHeader";
-
-// ─── Mock data ────────────────────────────────────────────────────────────────
-
-const MOCK_RIDERS: Rider[] = [
-  {
-    id: "usr_001",
-    name: "Tunde Bakare",
-    email: "tunde.b@gmail.com",
-    phone: "+234 803 100 2200",
-    accountStatus: "active",
-    walletBalance: 15_500,
-    totalTrips: 128,
-    lastTripDate: "2026-04-14",
-    joinedAt: "2023-06-01",
-    rating: 4.7,
-  },
-  {
-    id: "usr_002",
-    name: "Chidinma Okafor",
-    email: "chidinma.o@gmail.com",
-    phone: "+234 812 200 3300",
-    accountStatus: "active",
-    walletBalance: 3_200,
-    totalTrips: 45,
-    lastTripDate: "2026-04-13",
-    joinedAt: "2024-01-15",
-    rating: 4.9,
-  },
-  {
-    id: "usr_003",
-    name: "Hakeem Adisa",
-    email: "hakeem.a@gmail.com",
-    phone: "+234 808 300 4400",
-    accountStatus: "suspended",
-    walletBalance: 0,
-    totalTrips: 212,
-    lastTripDate: "2026-03-20",
-    joinedAt: "2022-09-10",
-    rating: 3.2,
-  },
-  {
-    id: "usr_004",
-    name: "Blessing Eze",
-    email: "blessing.e@gmail.com",
-    phone: "+234 814 400 5500",
-    accountStatus: "active",
-    walletBalance: 8_750,
-    totalTrips: 67,
-    lastTripDate: "2026-04-12",
-    joinedAt: "2023-11-30",
-    rating: 4.8,
-  },
-  {
-    id: "usr_005",
-    name: "Olusegun Martins",
-    email: "segun.m@gmail.com",
-    phone: "+234 809 500 6600",
-    accountStatus: "flagged",
-    walletBalance: 500,
-    totalTrips: 9,
-    lastTripDate: "2026-03-01",
-    joinedAt: "2025-12-01",
-    rating: 2.5,
-  },
-  {
-    id: "usr_006",
-    name: "Aisha Yusuf",
-    email: "aisha.y@gmail.com",
-    phone: "+234 815 600 7700",
-    accountStatus: "active",
-    walletBalance: 22_100,
-    totalTrips: 301,
-    lastTripDate: "2026-04-15",
-    joinedAt: "2022-04-05",
-    rating: 4.6,
-  },
-  {
-    id: "usr_007",
-    name: "Emmanuel Nwosu",
-    email: "emman.n@gmail.com",
-    phone: "+234 810 700 8800",
-    accountStatus: "active",
-    walletBalance: 4_800,
-    totalTrips: 88,
-    lastTripDate: "2026-04-11",
-    joinedAt: "2024-03-22",
-    rating: 4.5,
-  },
-  {
-    id: "usr_008",
-    name: "Grace Okonkwo",
-    email: "grace.ok@gmail.com",
-    phone: "+234 816 800 9900",
-    accountStatus: "active",
-    walletBalance: 12_300,
-    totalTrips: 159,
-    lastTripDate: "2026-04-10",
-    joinedAt: "2023-01-18",
-    rating: 4.8,
-  },
-  {
-    id: "usr_009",
-    name: "Kabiru Salami",
-    email: "kabiru.s@gmail.com",
-    phone: "+234 811 900 0011",
-    accountStatus: "deleted",
-    walletBalance: 0,
-    totalTrips: 3,
-    lastTripDate: "2025-10-05",
-    joinedAt: "2025-09-01",
-    rating: undefined,
-  },
-  {
-    id: "usr_010",
-    name: "Adaeze Obiora",
-    email: "adaeze.ob@gmail.com",
-    phone: "+234 817 011 1122",
-    accountStatus: "active",
-    walletBalance: 36_000,
-    totalTrips: 445,
-    lastTripDate: "2026-04-15",
-    joinedAt: "2021-11-01",
-    rating: 4.9,
-  },
-  {
-    id: "usr_011",
-    name: "Festus Agbaje",
-    email: "festus.a@gmail.com",
-    phone: "+234 808 122 2233",
-    accountStatus: "suspended",
-    walletBalance: 2_000,
-    totalTrips: 71,
-    lastTripDate: "2026-03-10",
-    joinedAt: "2023-07-14",
-    rating: 3.8,
-  },
-  {
-    id: "usr_012",
-    name: "Oluwakemi Adeyemi",
-    email: "kemi.ad@gmail.com",
-    phone: "+234 813 233 3344",
-    accountStatus: "active",
-    walletBalance: 6_450,
-    totalTrips: 113,
-    lastTripDate: "2026-04-14",
-    joinedAt: "2024-02-28",
-    rating: 4.6,
-  },
-];
-
-const MOCK_TRIPS: Record<string, RiderTrip[]> = {
-  usr_001: [
-    {
-      id: "tr_101",
-      pickup: "Ikeja, Lagos",
-      destination: "Victoria Island, Lagos",
-      fare: 3_200,
-      status: "completed",
-      date: "2026-04-14",
-      driverName: "Emeka Okonkwo",
-    },
-    {
-      id: "tr_102",
-      pickup: "Surulere, Lagos",
-      destination: "Lekki Phase 1",
-      fare: 4_100,
-      status: "completed",
-      date: "2026-04-10",
-      driverName: "Amina Bello",
-    },
-    {
-      id: "tr_103",
-      pickup: "Yaba, Lagos",
-      destination: "Oshodi, Lagos",
-      fare: 1_800,
-      status: "cancelled",
-      date: "2026-04-08",
-      driverName: "N/A",
-    },
-  ],
-  usr_002: [
-    {
-      id: "tr_201",
-      pickup: "Gwarinpa, Abuja",
-      destination: "Maitama, Abuja",
-      fare: 2_500,
-      status: "completed",
-      date: "2026-04-13",
-      driverName: "Suleiman Musa",
-    },
-    {
-      id: "tr_202",
-      pickup: "Wuse II, Abuja",
-      destination: "Central Area, Abuja",
-      fare: 1_500,
-      status: "completed",
-      date: "2026-04-09",
-      driverName: "Ngozi Ikenna",
-    },
-  ],
-};
+import {
+  useUsers,
+  useSuspendUser,
+  useReactivateUser,
+  useUserRides,
+} from "../hooks/useUsers";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -266,7 +71,7 @@ function RiderProfileModal({
   onAction: (id: string, action: "suspend" | "reactivate") => void;
 }): React.ReactNode {
   const [tab, setTab] = useState<"profile" | "trips">("profile");
-  const trips = MOCK_TRIPS[rider.id] ?? [];
+  const { data: trips = [], isLoading: tripsLoading } = useUserRides(rider.id);
   const initials = rider.name
     .split(" ")
     .map((n) => n[0])
@@ -379,7 +184,11 @@ function RiderProfileModal({
 
         {tab === "trips" && (
           <div>
-            {trips.length === 0 ? (
+            {tripsLoading ? (
+              <p className="text-center py-8 text-sm text-gray-400">
+                Loading trips…
+              </p>
+            ) : trips.length === 0 ? (
               <p className="text-center py-8 text-sm text-gray-400">
                 No trip history available.
               </p>
@@ -429,48 +238,33 @@ export default function UsersView(): React.ReactNode {
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedRiders, setSelectedRiders] = useState<Rider[]>([]);
   const [profileRider, setProfileRider] = useState<Rider | null>(null);
-  // swap with real query: const { data, isLoading } = useUsers({ search, status: statusFilter });
-  const loading = false;
-  const [riderData, setRiderData] = useState<Rider[]>(MOCK_RIDERS);
 
-  const filtered = useMemo(() => {
-    return riderData.filter((r) => {
-      const q = search.toLowerCase();
-      const matchSearch =
-        !q ||
-        r.name.toLowerCase().includes(q) ||
-        r.email.toLowerCase().includes(q) ||
-        r.phone.includes(q);
-      const matchStatus = !statusFilter || r.accountStatus === statusFilter;
-      return matchSearch && matchStatus;
-    });
-  }, [riderData, search, statusFilter]);
+  const { data: page, isLoading } = useUsers({ search, status: statusFilter });
+  const riderData: Rider[] = page?.items ?? [];
+
+  const suspendMutation = useSuspendUser();
+  const reactivateMutation = useReactivateUser();
+
+  const filtered = riderData; // filtering is server-side via query params
 
   const stats = useMemo(
     () => ({
-      total: riderData.length,
+      total: page?.total ?? 0,
       active: riderData.filter((r) => r.accountStatus === "active").length,
       suspended: riderData.filter((r) => r.accountStatus === "suspended")
         .length,
       flagged: riderData.filter((r) => r.accountStatus === "flagged").length,
     }),
-    [riderData],
+    [riderData, page],
   );
 
   const handleAction = (id: string, action: "suspend" | "reactivate"): void => {
-    setRiderData((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              accountStatus:
-                action === "suspend"
-                  ? ("suspended" as const)
-                  : ("active" as const),
-            }
-          : r,
-      ),
-    );
+    if (action === "suspend") {
+      suspendMutation.mutate(id);
+    } else {
+      reactivateMutation.mutate(id);
+    }
+    // Optimistically update the open modal
     if (profileRider?.id === id) {
       setProfileRider((prev) =>
         prev
@@ -702,7 +496,7 @@ export default function UsersView(): React.ReactNode {
           </button>
         )}
         <span className="ml-auto text-xs text-gray-400">
-          {filtered.length} results
+          {page?.total ?? 0} results
         </span>
       </div>
 
@@ -711,16 +505,9 @@ export default function UsersView(): React.ReactNode {
         selectedCount={selectedRiders.length}
         onClear={() => setSelectedRiders([])}
         onSuspend={() => {
-          const ids = selectedRiders
+          selectedRiders
             .filter((r) => r.accountStatus === "active")
-            .map((r) => r.id);
-          setRiderData((prev) =>
-            prev.map((r) =>
-              ids.includes(r.id)
-                ? { ...r, accountStatus: "suspended" as const }
-                : r,
-            ),
-          );
+            .forEach((r) => suspendMutation.mutate(r.id));
           setSelectedRiders([]);
         }}
         onExportCsv={() => exportToCsv(selectedRiders, "selected-riders.csv")}
@@ -731,8 +518,8 @@ export default function UsersView(): React.ReactNode {
       <DataTable<Rider>
         data={filtered}
         columns={columns}
-        loading={loading}
-        pageSize={10}
+        loading={isLoading}
+        pageSize={20}
         selectable
         onSelectionChange={setSelectedRiders}
       />

@@ -18,16 +18,16 @@ export const API_URLS = {
 
   // Users
   USERS: {
-    LIST: `${BASE}/users`,
-    DETAIL: (id: string) => `${BASE}/users/${id}`,
-    SUSPEND: (id: string) => `${BASE}/users/${id}/suspend`,
-    REACTIVATE: (id: string) => `${BASE}/users/${id}/reactivate`,
-    RIDES: (id: string) => `${BASE}/users/${id}/rides`,
+    LIST: `${BASE}/admin/users`,
+    DETAIL: (id: string) => `${BASE}/admin/users/${id}`,
+    SUSPEND: (id: string) => `${BASE}/admin/users/${id}/suspend`,
+    REACTIVATE: (id: string) => `${BASE}/admin/users/${id}/reactivate`,
+    RIDES: (id: string) => `${BASE}/admin/users/${id}/rides`,
   },
 
   // Drivers
   DRIVERS: {
-    LIST: `${BASE}/drivers`,
+    LIST: `${BASE}/admin/drivers`,
     DETAIL: (id: string) => `${BASE}/drivers/${id}`,
     APPROVE: (id: string) => `${BASE}/drivers/${id}/approve`,
     REJECT: (id: string) => `${BASE}/drivers/${id}/reject`,

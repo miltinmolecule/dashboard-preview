@@ -49,7 +49,7 @@ const BASE: Omit<UserProfile, "id"> = {
   firstName: "Tunde", lastName: "Bakare",
   email: "tunde.b@gmail.com", phone: "+234 803 100 2200",
   accountStatus: "active", isVerified: true, rating: 4.7,
-  dateOfBirth: "18/07/1990", nin: "A025023487", createdAt: "01/06/2023",
+  dateOfBirth: "18/07/1990", createdAt: "01/06/2023",
   bankName: "Zenith", bankAccount: "2389377973434", bankAccountName: "Tunde Bakare",
   address: "9B, 2 Collins Court Mall Street", city: "Ikeja", state: "Lagos", country: "Nigeria",
   emergencyContacts: [
