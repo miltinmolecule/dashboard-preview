@@ -31,8 +31,8 @@ export default function LoginView(): React.ReactNode {
     });
 
     setLoading(false);
-
     if (result?.error) {
+      console.log('Login error', result)
       setError("Invalid email or password. Please try again.");
     } else {
       router.push(callbackUrl);
@@ -46,7 +46,7 @@ export default function LoginView(): React.ReactNode {
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-(--primary) mb-4">
             <svg
-              className="w-8 h-8 text-white"
+              className="w-7 h-7 text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

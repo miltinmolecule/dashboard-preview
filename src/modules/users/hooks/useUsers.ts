@@ -6,6 +6,7 @@ import {
   suspendUser,
   reactivateUser,
   type UserFilters,
+  type UsersPage,
 } from "../services/users.service";
 
 export const useUsers = (filters: UserFilters) => {

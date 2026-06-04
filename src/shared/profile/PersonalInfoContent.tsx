@@ -25,7 +25,6 @@ export default function PersonalInfoContent({
               { label: "Date of birth:", value: profile.dateOfBirth },
               { label: "Phone no.:", value: profile.phone },
               { label: "Email:", value: profile.email },
-              { label: "NIN No.:", value: profile.nin },
             ].map(({ label, value }) => (
               <div key={label} className="flex items-center gap-8">
                 <span className="w-32 shrink-0 text-sm text-gray-400">
@@ -35,7 +34,7 @@ export default function PersonalInfoContent({
                   {value}
                 </span>
               </div>
-            ))}
+            ))} 
           </div>
         </div>
 

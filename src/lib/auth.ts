@@ -27,7 +27,7 @@ export const authConfig: NextAuthConfig = {
             password: parsed.data.password,
           });
 
-          const { accessToken, refreshToken, ...rest} = data.data;
+          const { access_token: accessToken, refresh_token: refreshToken, ...rest} = data.data;
 
           return {
             ...rest,

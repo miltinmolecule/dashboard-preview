@@ -52,7 +52,6 @@ export interface BaseProfile {
   isVerified: boolean;
   rating: number;
   dateOfBirth: string;
-  nin: string;
   createdAt: string;
   bankName: string;
   bankAccount: string;
