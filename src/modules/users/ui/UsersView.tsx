@@ -12,7 +12,12 @@ import ModalWrapper from "@/shared/modals/ModalWrapper";
 import { cn } from "@/utils/cn";
 import type { Rider, RiderTrip } from "../services/users.service";
 import DashboardHeader from "@/shared/cards/DashboardHeader";
-import { useUsers, useSuspendUser, useReactivateUser, useUserRides } from "../hooks/useUsers";
+import {
+  useUsers,
+  useSuspendUser,
+  useReactivateUser,
+  useUserRides,
+} from "../hooks/useUsers";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -180,7 +185,9 @@ function RiderProfileModal({
         {tab === "trips" && (
           <div>
             {tripsLoading ? (
-              <p className="text-center py-8 text-sm text-gray-400">Loading trips…</p>
+              <p className="text-center py-8 text-sm text-gray-400">
+                Loading trips…
+              </p>
             ) : trips.length === 0 ? (
               <p className="text-center py-8 text-sm text-gray-400">
                 No trip history available.
@@ -244,7 +251,8 @@ export default function UsersView(): React.ReactNode {
     () => ({
       total: page?.total ?? 0,
       active: riderData.filter((r) => r.accountStatus === "active").length,
-      suspended: riderData.filter((r) => r.accountStatus === "suspended").length,
+      suspended: riderData.filter((r) => r.accountStatus === "suspended")
+        .length,
       flagged: riderData.filter((r) => r.accountStatus === "flagged").length,
     }),
     [riderData, page],
@@ -259,7 +267,12 @@ export default function UsersView(): React.ReactNode {
     // Optimistically update the open modal
     if (profileRider?.id === id) {
       setProfileRider((prev) =>
-        prev ? { ...prev, accountStatus: action === "suspend" ? "suspended" : "active" } : prev,
+        prev
+          ? {
+              ...prev,
+              accountStatus: action === "suspend" ? "suspended" : "active",
+            }
+          : prev,
       );
     }
   };
@@ -492,16 +505,9 @@ export default function UsersView(): React.ReactNode {
         selectedCount={selectedRiders.length}
         onClear={() => setSelectedRiders([])}
         onSuspend={() => {
-          const ids = selectedRiders
+          selectedRiders
             .filter((r) => r.accountStatus === "active")
-            .map((r) => r.id);
-          setRiderData((prev) =>
-            prev.map((r) =>
-              ids.includes(r.id)
-                ? { ...r, accountStatus: "suspended" as const }
-                : r,
-            ),
-          );
+            .forEach((r) => suspendMutation.mutate(r.id));
           setSelectedRiders([]);
         }}
         onExportCsv={() => exportToCsv(selectedRiders, "selected-riders.csv")}
