@@ -49,7 +49,7 @@ const BASE: Omit<DriverProfile, "id"> = {
   firstName: "Emeka", lastName: "Okonkwo",
   email: "emeka.o@email.com", phone: "+234 803 456 7890",
   accountStatus: "active", kycStatus: "approved", isVerified: true, rating: 4.8,
-  dateOfBirth: "18/12/1990", nin: "A025023487", createdAt: "15/03/2023",
+  dateOfBirth: "18/12/1990", createdAt: "15/03/2023",
   bankName: "Zenith", bankAccount: "2389377973434", bankAccountName: "Emeka Okonkwo",
   address: "9B, 2 Collins Court Mall Street", city: "Ikeja", state: "Lagos", country: "Nigeria",
   emergencyContacts: [
