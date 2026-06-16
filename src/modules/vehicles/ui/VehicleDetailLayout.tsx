@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/utils/cn";
@@ -57,7 +57,7 @@ export default function VehicleDetailLayout({
 }: Props): React.ReactNode {
   const pathname = usePathname();
   const [status, setStatus] = useState(vehicle?.status ?? "pending");
-  const navItems = NAV_ITEMS(id);
+  const navItems = useMemo(() => NAV_ITEMS(id), [id]);
   const currentTab = navItems.find((n) => pathname.startsWith(n.href));
 
   if (!vehicle) {

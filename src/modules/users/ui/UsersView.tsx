@@ -247,16 +247,15 @@ export default function UsersView(): React.ReactNode {
 
   const filtered = riderData; // filtering is server-side via query params
 
-  const stats = useMemo(
-    () => ({
-      total: page?.total ?? 0,
-      active: riderData.filter((r) => r.accountStatus === "active").length,
-      suspended: riderData.filter((r) => r.accountStatus === "suspended")
-        .length,
-      flagged: riderData.filter((r) => r.accountStatus === "flagged").length,
-    }),
-    [riderData, page],
-  );
+  const stats = useMemo(() => {
+    let active = 0, suspended = 0, flagged = 0;
+    for (const r of riderData) {
+      if (r.accountStatus === "active") active++;
+      else if (r.accountStatus === "suspended") suspended++;
+      else if (r.accountStatus === "flagged") flagged++;
+    }
+    return { total: page?.total ?? 0, active, suspended, flagged };
+  }, [riderData, page]);
 
   const handleAction = (id: string, action: "suspend" | "reactivate"): void => {
     if (action === "suspend") {
