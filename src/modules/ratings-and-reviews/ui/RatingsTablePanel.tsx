@@ -1,3 +1,5 @@
+"use client";
+
 import DataTable from "@/shared/common/DataTable";
 import StatusBadge from "@/shared/common/StatusBadge";
 import FilterDropdown from "@/shared/forms/FilterDropdown";
@@ -28,12 +30,14 @@ const SCORE_FILTER_OPTIONS = [
 
 function RatingsTablePanel({
   data,
+  loading = false,
   onFlag,
   onRemove,
   onRestore,
   onRespond,
 }: {
   data: Rating[];
+  loading?: boolean;
   onFlag: (id: string, reason: string) => void;
   onRemove: (id: string) => void;
   onRestore: (id: string) => void;
@@ -52,7 +56,7 @@ function RatingsTablePanel({
         !q ||
         r.rater.name.toLowerCase().includes(q) ||
         r.ratee.name.toLowerCase().includes(q) ||
-        r.ride_id.toLowerCase().includes(q);
+        r.booking_id.toLowerCase().includes(q);
       const matchStatus = !statusFilter || r.status === statusFilter;
       const matchScore = !scoreFilter || String(r.score) === scoreFilter;
       return matchSearch && matchStatus && matchScore;
@@ -104,7 +108,7 @@ function RatingsTablePanel({
             {row.original.ratee.name}
           </p>
           <p className="font-mono text-xs text-gray-400">
-            {row.original.ride_id}
+            {row.original.booking_id}
           </p>
         </div>
       ),
@@ -277,7 +281,7 @@ function RatingsTablePanel({
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Search by name or ride ID..."
+          placeholder="Search by name or booking ID..."
           className="w-72"
         />
         <FilterDropdown
@@ -313,7 +317,7 @@ function RatingsTablePanel({
       <DataTable<Rating>
         data={filtered}
         columns={columns}
-        loading={false}
+        loading={loading}
         pageSize={10}
       />
 

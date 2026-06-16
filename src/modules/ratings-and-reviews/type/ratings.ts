@@ -7,11 +7,12 @@ export const VALID_SCORES = [1, 2, 3, 4, 5] as const;
 
 export interface Rating {
   id: string;
-  ride_id: string;
+  booking_id: string;
   rater: { id: string; name: string; phone: string };
   ratee: { id: string; name: string; phone: string };
   ratee_type: RateeType;
   score: 1 | 2 | 3 | 4 | 5;
+  comment?: string;
   status: RatingStatus;
   flagged_reason?: string;
   admin_response?: string;

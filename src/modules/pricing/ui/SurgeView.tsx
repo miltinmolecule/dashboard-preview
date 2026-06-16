@@ -4,10 +4,9 @@ import { useMemo, useState } from "react";
 import FilterDropdown from "@/shared/forms/FilterDropdown";
 import ModalWrapper from "@/shared/modals/ModalWrapper";
 import { cn } from "@/utils/cn";
-import { CITIES, MOCK_SURGE_CONFIGS, VEHICLE_TYPES, VEHICLE_TYPE_LABELS, cityName, genSurgeId } from "../data/mock";
+import { CITIES, VEHICLE_TYPES, VEHICLE_TYPE_LABELS, cityName } from "../data/mock";
+import { useSurgeConfigs, useCreateSurgeConfig, useUpdateSurgeConfig, useToggleSurge } from "../hooks/usePricing";
 import type { SurgeConfig, VehicleType } from "../type/pricing";
-
-// ─── Filter options ─────────────────────────────────────────────────────────
 
 const VEHICLE_TYPE_FILTERS = (Object.keys(VEHICLE_TYPE_LABELS) as VehicleType[]).map((vt) => ({
   label: VEHICLE_TYPE_LABELS[vt],
@@ -15,8 +14,6 @@ const VEHICLE_TYPE_FILTERS = (Object.keys(VEHICLE_TYPE_LABELS) as VehicleType[])
 }));
 
 const CITY_FILTERS = [{ label: "Global", value: "global" }, ...CITIES.map((c) => ({ label: c.name, value: c.id }))];
-
-// ─── Badge helper (per skill §5) ─────────────────────────────────────────────
 
 function surgeBadge(config: SurgeConfig): { label: string; className: string } {
   if (!config.is_active) return { label: "OFF", className: "border-gray-200 bg-gray-100 text-gray-500" };
@@ -26,11 +23,9 @@ function surgeBadge(config: SurgeConfig): { label: string; className: string } {
   return { label: "LIVE — AUTO", className: "border-orange-200 bg-orange-50 text-orange-700" };
 }
 
-// ─── Surge config form (create / edit thresholds) ───────────────────────────
-
 interface SurgeFormState {
   vehicle_type: VehicleType;
-  city_id: string; // "" = global
+  city_id: string;
   multiplier: string;
   trigger_mode: "auto" | "manual";
   demand_ratio_threshold: string;
@@ -210,107 +205,70 @@ function SurgeFormModal({
   );
 }
 
-// ─── Main view ──────────────────────────────────────────────────────────────
-
 export default function SurgeView(): React.ReactNode {
-  // swap with real query: useSurgeConfigs(filters)
-  const [data, setData] = useState<SurgeConfig[]>(MOCK_SURGE_CONFIGS);
+  const query = useSurgeConfigs();
+  const createMutation = useCreateSurgeConfig();
+  const updateMutation = useUpdateSurgeConfig();
+  const toggleMutation = useToggleSurge();
+
+  const allConfigs = query.data?.data ?? [];
+
   const [vehicleFilter, setVehicleFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [editTarget, setEditTarget] = useState<SurgeConfig | null>(null);
 
   const filtered = useMemo(() => {
-    return data.filter((c) => {
+    return allConfigs.filter((c) => {
       const matchVehicle = !vehicleFilter || c.vehicle_type === vehicleFilter;
       const matchCity = !cityFilter || (cityFilter === "global" ? c.city_id === null : c.city_id === cityFilter);
       return matchVehicle && matchCity;
     });
-  }, [data, vehicleFilter, cityFilter]);
+  }, [allConfigs, vehicleFilter, cityFilter]);
 
   const stats = useMemo(
     () => ({
-      total: data.length,
-      live: data.filter((c) => c.is_active).length,
-      manual: data.filter((c) => c.trigger_mode === "manual").length,
-      auto: data.filter((c) => c.trigger_mode === "auto").length,
+      total: allConfigs.length,
+      live: allConfigs.filter((c) => c.is_active).length,
+      manual: allConfigs.filter((c) => c.trigger_mode === "manual").length,
+      auto: allConfigs.filter((c) => c.trigger_mode === "auto").length,
     }),
-    [data],
+    [allConfigs],
   );
 
-  // Optimistic toggle — flips immediately; rolls back if the mutation fails.
   const handleToggle = (config: SurgeConfig): void => {
-    if (config.trigger_mode === "auto") return; // auto surge toggle is read-only
-    const nextActive = !config.is_active;
-    // swap with real mutation: useToggleSurge().mutate({ id: config.id, is_active: nextActive })
-    setData((prev) =>
-      prev.map((c) =>
-        c.id === config.id
-          ? {
-              ...c,
-              is_active: nextActive,
-              manually_activated_by: nextActive ? "Fatima Bello" : c.manually_activated_by,
-              manually_activated_at: nextActive ? new Date().toISOString() : c.manually_activated_at,
-              updated_at: new Date().toISOString(),
-            }
-          : c,
-      ),
-    );
+    if (config.trigger_mode === "auto") return;
+    toggleMutation.mutate({ id: config.id, is_active: !config.is_active });
   };
 
-  const openCreate = (): void => {
-    setEditTarget(null);
-    setModal("create");
-  };
-
-  const openEdit = (config: SurgeConfig): void => {
-    setEditTarget(config);
-    setModal("edit");
-  };
-
-  const closeModal = (): void => {
-    setModal(null);
-    setEditTarget(null);
-  };
+  const openCreate = (): void => { setEditTarget(null); setModal("create"); };
+  const openEdit = (config: SurgeConfig): void => { setEditTarget(config); setModal("edit"); };
+  const closeModal = (): void => { setModal(null); setEditTarget(null); };
 
   const handleSave = (form: SurgeFormState, id?: string): void => {
-    const now = new Date().toISOString();
     if (id) {
-      // swap with real mutation: useUpdateSurgeConfig().mutate({ id, payload })
-      setData((prev) =>
-        prev.map((c) =>
-          c.id === id
-            ? {
-                ...c,
-                multiplier: Number(form.multiplier),
-                trigger_mode: form.trigger_mode,
-                demand_ratio_threshold: Number(form.demand_ratio_threshold),
-                updated_at: now,
-              }
-            : c,
-        ),
-      );
+      updateMutation.mutate({
+        id,
+        payload: {
+          multiplier: Number(form.multiplier),
+          trigger_mode: form.trigger_mode,
+          demand_ratio_threshold: Number(form.demand_ratio_threshold),
+        },
+      });
     } else {
-      // swap with real mutation: useCreateSurgeConfig().mutate(payload)
-      const newConfig: SurgeConfig = {
-        id: genSurgeId(),
+      createMutation.mutate({
         vehicle_type: form.vehicle_type,
         city_id: form.city_id || null,
         multiplier: Number(form.multiplier),
         trigger_mode: form.trigger_mode,
         demand_ratio_threshold: Number(form.demand_ratio_threshold),
-        is_active: false,
-        created_at: now,
-        updated_at: now,
-      };
-      setData((prev) => [newConfig, ...prev]);
+      });
     }
     closeModal();
   };
 
   return (
     <div className="space-y-5">
-      {/* Stats strip */}
       <div className="grid grid-cols-4 gap-3">
         {[
           { label: "Total Configs", value: stats.total, color: "text-gray-900", bg: "bg-gray-50" },
@@ -325,7 +283,6 @@ export default function SurgeView(): React.ReactNode {
         ))}
       </div>
 
-      {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
         <FilterDropdown
           options={VEHICLE_TYPE_FILTERS}
@@ -336,10 +293,7 @@ export default function SurgeView(): React.ReactNode {
         <FilterDropdown options={CITY_FILTERS} value={cityFilter} onChange={setCityFilter} placeholder="City" />
         {(vehicleFilter || cityFilter) && (
           <button
-            onClick={() => {
-              setVehicleFilter("");
-              setCityFilter("");
-            }}
+            onClick={() => { setVehicleFilter(""); setCityFilter(""); }}
             className="text-xs text-blue-600 hover:underline"
           >
             Clear filters
@@ -357,7 +311,6 @@ export default function SurgeView(): React.ReactNode {
         </button>
       </div>
 
-      {/* Surge cards */}
       <div className="grid grid-cols-3 gap-4">
         {filtered.map((config) => {
           const badge = surgeBadge(config);
@@ -406,7 +359,7 @@ export default function SurgeView(): React.ReactNode {
                 </button>
                 <button
                   onClick={() => handleToggle(config)}
-                  disabled={config.trigger_mode === "auto"}
+                  disabled={config.trigger_mode === "auto" || toggleMutation.isPending}
                   title={
                     config.trigger_mode === "auto"
                       ? "Auto surge is read-only — adjust thresholds instead"
@@ -417,7 +370,7 @@ export default function SurgeView(): React.ReactNode {
                   className={cn(
                     "relative h-6 w-11 rounded-full transition-colors",
                     config.is_active ? "bg-red-500" : "bg-gray-300",
-                    config.trigger_mode === "auto" && "cursor-not-allowed opacity-50",
+                    (config.trigger_mode === "auto" || toggleMutation.isPending) && "cursor-not-allowed opacity-50",
                   )}
                 >
                   <span
@@ -433,7 +386,6 @@ export default function SurgeView(): React.ReactNode {
         })}
       </div>
 
-      {/* Modal */}
       {(modal === "create" || modal === "edit") && (
         <SurgeFormModal config={modal === "edit" ? editTarget : null} onClose={closeModal} onSave={handleSave} />
       )}

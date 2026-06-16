@@ -13,7 +13,7 @@ interface AppInputProps extends PrefixProps {
   placeholder?: string;
   value?: string | number;
   inputRender?: "normal" | "textarea";
-  type?: "text" | "password" | "email" | "date" | "file" | "textarea";
+  type?: "text" | "password" | "email" | "date" | "file" | "textarea" | "number";
   inputWrapper?: string;
   wrapperClass?: string;
   startContent?: React.ReactNode;

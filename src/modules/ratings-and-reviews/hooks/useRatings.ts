@@ -42,11 +42,11 @@ export function useRatings(filters?: RatingFilters) {
   });
 
   return {
-    ratings:    query.data?.data ?? [],
+    ratings:    query.data?.ratings ?? [],
     pagination: {
       total:      query.data?.total ?? 0,
       page:       query.data?.page ?? 1,
-      totalPages: query.data?.totalPages ?? 1,
+      totalPages: Math.ceil((query.data?.total ?? 0) / (query.data?.limit ?? 20)) || 1,
     },
     isLoading: query.isLoading,
     isError:   query.isError,

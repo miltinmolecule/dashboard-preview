@@ -126,8 +126,17 @@ export const API_URLS = {
 
   // Analytics
   ANALYTICS: {
-    REPORTS: `${BASE}/analytics/reports`,
-    EXPORT: `${BASE}/analytics/export`,
+    RIDES:      `${BASE}/admin/analytics/rides`,
+    REVENUE:    `${BASE}/admin/analytics/revenue`,
+    DRIVERS:    `${BASE}/admin/analytics/drivers`,
+    PASSENGERS: `${BASE}/admin/analytics/passengers`,
+    SURGE:      `${BASE}/admin/analytics/surge`,
+  },
+
+  // Reports
+  REPORTS: {
+    LIST:   `${BASE}/admin/reports`,
+    DETAIL: (id: string) => `${BASE}/admin/reports/${id}`,
   },
 
   // Notifications

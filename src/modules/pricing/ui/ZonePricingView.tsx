@@ -6,12 +6,16 @@ import DataTable from "@/shared/common/DataTable";
 import StatusBadge from "@/shared/common/StatusBadge";
 import FilterDropdown from "@/shared/forms/FilterDropdown";
 import { cn } from "@/utils/cn";
-import { CITIES, MOCK_ZONE_RULES, VEHICLE_TYPE_LABELS, cityName, genZoneRuleId, zoneName } from "../data/mock";
+import { CITIES, VEHICLE_TYPE_LABELS, cityName, zoneName } from "../data/mock";
 import { formatKobo } from "../lib/format";
 import PricingRuleForm from "./PricingRuleForm";
+import {
+  useZoneRules,
+  useCreateZoneRule,
+  useUpdateZoneRule,
+  useDeleteZoneRule,
+} from "../hooks/usePricing";
 import type { CreateMetricDto, CreateZoneDto, VehicleType, ZonePricingRule } from "../type/pricing";
-
-// ─── Filter options ─────────────────────────────────────────────────────────
 
 const VEHICLE_TYPE_FILTERS = (Object.keys(VEHICLE_TYPE_LABELS) as VehicleType[]).map((vt) => ({
   label: VEHICLE_TYPE_LABELS[vt],
@@ -24,76 +28,58 @@ const formatDate = (iso: string): string =>
   new Date(iso).toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" });
 
 export default function ZonePricingView(): React.ReactNode {
-  // swap with real query: useZoneRules(filters)
-  const [data, setData] = useState<ZonePricingRule[]>(MOCK_ZONE_RULES);
+  const query = useZoneRules();
+  const createMutation = useCreateZoneRule();
+  const updateMutation = useUpdateZoneRule();
+  const deleteMutation = useDeleteZoneRule();
+
+  const allRules = query.data?.data ?? [];
+  const loading = query.isLoading;
+  const isSaving = createMutation.isPending || updateMutation.isPending;
+
   const [vehicleFilter, setVehicleFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [editTarget, setEditTarget] = useState<ZonePricingRule | null>(null);
-  const loading = false;
-  const isSaving = false;
 
   const filtered = useMemo(() => {
-    return data.filter((r) => {
+    return allRules.filter((r) => {
       const matchVehicle = !vehicleFilter || r.vehicle_type === vehicleFilter;
       const matchCity = !cityFilter || r.city_id === cityFilter;
       return matchVehicle && matchCity;
     });
-  }, [data, vehicleFilter, cityFilter]);
+  }, [allRules, vehicleFilter, cityFilter]);
 
   const stats = useMemo(
     () => ({
-      total: data.length,
-      active: data.filter((r) => r.is_active).length,
-      symmetric: data.filter((r) => r.is_symmetric).length,
-      cities: new Set(data.map((r) => r.city_id)).size,
+      total: allRules.length,
+      active: allRules.filter((r) => r.is_active).length,
+      symmetric: allRules.filter((r) => r.is_symmetric).length,
+      cities: new Set(allRules.map((r) => r.city_id)).size,
     }),
-    [data],
+    [allRules],
   );
 
-  const openCreate = (): void => {
-    setEditTarget(null);
-    setModal("create");
-  };
-
-  const openEdit = (rule: ZonePricingRule): void => {
-    setEditTarget(rule);
-    setModal("edit");
-  };
-
-  const closeModal = (): void => {
-    setModal(null);
-    setEditTarget(null);
-  };
+  const openCreate = (): void => { setEditTarget(null); setModal("create"); };
+  const openEdit = (rule: ZonePricingRule): void => { setEditTarget(rule); setModal("edit"); };
+  const closeModal = (): void => { setModal(null); setEditTarget(null); };
 
   const handleSubmit = (values: CreateMetricDto | CreateZoneDto): void => {
     const payload = values as CreateZoneDto;
-    const now = new Date().toISOString();
     if (modal === "edit" && editTarget) {
-      // swap with real mutation: useUpdateZoneRule().mutate({ id: editTarget.id, payload })
-      setData((prev) =>
-        prev.map((r) => (r.id === editTarget.id ? { ...r, ...payload, updated_at: now } : r)),
-      );
+      updateMutation.mutate({ id: editTarget.id, payload });
     } else {
-      // swap with real mutation: useCreateZoneRule().mutate(payload)
-      const newRule: ZonePricingRule = {
-        ...payload,
-        id: genZoneRuleId(),
-        is_active: true,
-        created_by: "adm_001",
-        created_at: now,
-        updated_at: now,
-      };
-      setData((prev) => [newRule, ...prev]);
+      createMutation.mutate(payload);
     }
     closeModal();
   };
 
-  const handleToggleActive = (id: string): void => {
-    // swap with real mutation: useDeleteZoneRule() (soft delete) / useUpdateZoneRule() to reactivate
-    setData((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, is_active: !r.is_active, updated_at: new Date().toISOString() } : r)),
-    );
+  const handleToggleActive = (rule: ZonePricingRule): void => {
+    if (rule.is_active) {
+      deleteMutation.mutate(rule.id);
+    } else {
+      updateMutation.mutate({ id: rule.id, payload: { is_active: true } as Partial<CreateZoneDto> });
+    }
   };
 
   const columns: ColumnDef<ZonePricingRule, unknown>[] = [
@@ -173,8 +159,8 @@ export default function ZonePricingView(): React.ReactNode {
               </svg>
             </button>
             <button
-              onClick={() => handleToggleActive(rule.id)}
-              title={rule.is_active ? "Deactivate (soft delete)" : "Reactivate"}
+              onClick={() => handleToggleActive(rule)}
+              title={rule.is_active ? "Deactivate" : "Reactivate"}
               className={cn(
                 "rounded-md p-1.5 transition-colors",
                 rule.is_active
@@ -205,7 +191,6 @@ export default function ZonePricingView(): React.ReactNode {
 
   return (
     <div className="space-y-5">
-      {/* Stats strip */}
       <div className="grid grid-cols-4 gap-3">
         {[
           { label: "Total Rules", value: stats.total, color: "text-gray-900", bg: "bg-gray-50" },
@@ -220,7 +205,6 @@ export default function ZonePricingView(): React.ReactNode {
         ))}
       </div>
 
-      {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
         <FilterDropdown
           options={VEHICLE_TYPE_FILTERS}
@@ -231,10 +215,7 @@ export default function ZonePricingView(): React.ReactNode {
         <FilterDropdown options={CITY_FILTERS} value={cityFilter} onChange={setCityFilter} placeholder="City" />
         {(vehicleFilter || cityFilter) && (
           <button
-            onClick={() => {
-              setVehicleFilter("");
-              setCityFilter("");
-            }}
+            onClick={() => { setVehicleFilter(""); setCityFilter(""); }}
             className="text-xs text-blue-600 hover:underline"
           >
             Clear filters
@@ -252,10 +233,8 @@ export default function ZonePricingView(): React.ReactNode {
         </button>
       </div>
 
-      {/* Table */}
       <DataTable<ZonePricingRule> data={filtered} columns={columns} loading={loading} pageSize={10} />
 
-      {/* Modal */}
       {(modal === "create" || modal === "edit") && (
         <PricingRuleForm
           type="zone"

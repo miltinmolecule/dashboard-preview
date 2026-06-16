@@ -1,3 +1,5 @@
+"use client";
+
 import ModalWrapper from "@/shared/modals/ModalWrapper";
 import { useState } from "react";
 import { Rating } from "../type/ratings";

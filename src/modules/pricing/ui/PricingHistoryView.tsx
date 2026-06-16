@@ -5,11 +5,9 @@ import { type ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/shared/common/DataTable";
 import FilterDropdown from "@/shared/forms/FilterDropdown";
 import { cn } from "@/utils/cn";
-import { MOCK_HISTORY } from "../data/mock";
 import { formatKobo } from "../lib/format";
+import { usePricingHistory } from "../hooks/usePricing";
 import type { PricingHistoryEntry } from "../type/pricing";
-
-// ─── Filter options ─────────────────────────────────────────────────────────
 
 const ENTITY_FILTERS = [
   { label: "Metric", value: "metric" },
@@ -43,28 +41,29 @@ const formatDateTime = (iso: string): string =>
   new Date(iso).toLocaleString("en-NG", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
 export default function PricingHistoryView(): React.ReactNode {
-  // swap with real query: usePricingHistory({ page, limit, entity_type })
-  const [data] = useState<PricingHistoryEntry[]>(MOCK_HISTORY);
+  const query = usePricingHistory();
+  const allEntries = query.data?.data ?? [];
+  const loading = query.isLoading;
+
   const [entityFilter, setEntityFilter] = useState("");
   const [actionFilter, setActionFilter] = useState("");
-  const loading = false;
 
   const filtered = useMemo(() => {
-    return data.filter((h) => {
+    return allEntries.filter((h) => {
       const matchEntity = !entityFilter || h.entity_type === entityFilter;
       const matchAction = !actionFilter || h.action === actionFilter;
       return matchEntity && matchAction;
     });
-  }, [data, entityFilter, actionFilter]);
+  }, [allEntries, entityFilter, actionFilter]);
 
   const stats = useMemo(
     () => ({
-      total: data.length,
-      creates: data.filter((h) => h.action === "CREATE").length,
-      updates: data.filter((h) => h.action === "UPDATE").length,
-      other: data.filter((h) => h.action === "DELETE" || h.action === "SURGE_TOGGLE").length,
+      total: allEntries.length,
+      creates: allEntries.filter((h) => h.action === "CREATE").length,
+      updates: allEntries.filter((h) => h.action === "UPDATE").length,
+      other: allEntries.filter((h) => h.action === "DELETE" || h.action === "SURGE_TOGGLE").length,
     }),
-    [data],
+    [allEntries],
   );
 
   const columns: ColumnDef<PricingHistoryEntry, unknown>[] = [
@@ -131,7 +130,6 @@ export default function PricingHistoryView(): React.ReactNode {
 
   return (
     <div className="space-y-5">
-      {/* Stats strip */}
       <div className="grid grid-cols-4 gap-3">
         {[
           { label: "Total Entries", value: stats.total, color: "text-gray-900", bg: "bg-gray-50" },
@@ -146,16 +144,12 @@ export default function PricingHistoryView(): React.ReactNode {
         ))}
       </div>
 
-      {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
         <FilterDropdown options={ENTITY_FILTERS} value={entityFilter} onChange={setEntityFilter} placeholder="Entity Type" />
         <FilterDropdown options={ACTION_FILTERS} value={actionFilter} onChange={setActionFilter} placeholder="Action" />
         {(entityFilter || actionFilter) && (
           <button
-            onClick={() => {
-              setEntityFilter("");
-              setActionFilter("");
-            }}
+            onClick={() => { setEntityFilter(""); setActionFilter(""); }}
             className="text-xs text-blue-600 hover:underline"
           >
             Clear filters
@@ -164,7 +158,6 @@ export default function PricingHistoryView(): React.ReactNode {
         <span className="ml-auto text-xs text-gray-400">{filtered.length} results</span>
       </div>
 
-      {/* Table */}
       <DataTable<PricingHistoryEntry> data={filtered} columns={columns} loading={loading} pageSize={10} />
     </div>
   );

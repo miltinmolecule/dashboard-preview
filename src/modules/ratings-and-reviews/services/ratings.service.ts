@@ -1,8 +1,15 @@
 import api from "@/lib/interceptor";
 import { API_URLS } from "@/lib/api-urls";
-import type { ApiResponse, PaginatedResponse } from "@/config/types/generic";
+import type { ApiResponse } from "@/config/types/generic";
 import { VALID_RATEE_TYPES, VALID_SCORES, VALID_STATUSES } from "../type/ratings";
 import type { Rating, RatingAlert, RatingFilters, RatingStats, ThresholdConfig } from "../type/ratings";
+
+export interface RatingsListResponse {
+  ratings: Rating[];
+  total: number;
+  page: number;
+  limit: number;
+}
 
 function sanitiseFilters(f?: RatingFilters): Record<string, unknown> {
   if (!f) return {};
@@ -16,11 +23,11 @@ function sanitiseFilters(f?: RatingFilters): Record<string, unknown> {
   };
 }
 
-export const fetchRatings = async (filters?: RatingFilters): Promise<PaginatedResponse<Rating>> => {
-  const { data } = await api.get<ApiResponse<PaginatedResponse<Rating>>>(API_URLS.RATINGS.LIST, {
+export const fetchRatings = async (filters?: RatingFilters): Promise<RatingsListResponse> => {
+  const { data } = await api.get<RatingsListResponse>(API_URLS.RATINGS.LIST, {
     params: sanitiseFilters(filters),
   });
-  return data.data;
+  return data;
 };
 
 export const flagRating = async (id: string, reason: string): Promise<Rating> => {
