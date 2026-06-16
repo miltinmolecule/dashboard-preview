@@ -1,3 +1,5 @@
+"use client";
+
 import StatusBadge from "@/shared/common/StatusBadge";
 import ModalWrapper from "@/shared/modals/ModalWrapper";
 import { cn } from "@/utils/cn";
@@ -69,9 +71,9 @@ function RatingDetailModal({
               </div>
             </div>
             <div>
-              <p className="text-xs text-gray-400">Ride</p>
+              <p className="text-xs text-gray-400">Booking</p>
               <p className="mt-0.5 font-mono text-sm text-gray-700">
-                {rating.ride_id}
+                {rating.booking_id}
               </p>
             </div>
           </div>
@@ -82,6 +84,13 @@ function RatingDetailModal({
               {new Date(rating.created_at).toLocaleString("en-NG")}
             </p>
           </div>
+
+          {rating.comment && (
+            <div className="rounded-lg bg-gray-50 px-4 py-3">
+              <p className="text-xs text-gray-400">Comment</p>
+              <p className="mt-0.5 text-sm text-gray-700">{rating.comment}</p>
+            </div>
+          )}
 
           {rating.flagged_reason && (
             <div className="rounded-lg border border-orange-200 bg-orange-50 px-4 py-3">

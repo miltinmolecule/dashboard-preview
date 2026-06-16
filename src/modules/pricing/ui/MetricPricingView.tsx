@@ -6,12 +6,16 @@ import DataTable from "@/shared/common/DataTable";
 import StatusBadge from "@/shared/common/StatusBadge";
 import FilterDropdown from "@/shared/forms/FilterDropdown";
 import { cn } from "@/utils/cn";
-import { CITIES, MOCK_METRIC_RULES, VEHICLE_TYPE_LABELS, cityName, genMetricId } from "../data/mock";
+import { CITIES, VEHICLE_TYPE_LABELS, cityName } from "../data/mock";
 import { formatKobo } from "../lib/format";
 import PricingRuleForm from "./PricingRuleForm";
+import {
+  useMetricRules,
+  useCreateMetricRule,
+  useUpdateMetricRule,
+  useDeleteMetricRule,
+} from "../hooks/usePricing";
 import type { CreateMetricDto, CreateZoneDto, MetricPricingRule, VehicleType } from "../type/pricing";
-
-// ─── Filter options ─────────────────────────────────────────────────────────
 
 const VEHICLE_TYPE_FILTERS = (Object.keys(VEHICLE_TYPE_LABELS) as VehicleType[]).map((vt) => ({
   label: VEHICLE_TYPE_LABELS[vt],
@@ -24,76 +28,58 @@ const formatDate = (iso: string): string =>
   new Date(iso).toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" });
 
 export default function MetricPricingView(): React.ReactNode {
-  // swap with real query: useMetricRules(filters)
-  const [data, setData] = useState<MetricPricingRule[]>(MOCK_METRIC_RULES);
+  const query = useMetricRules();
+  const createMutation = useCreateMetricRule();
+  const updateMutation = useUpdateMetricRule();
+  const deleteMutation = useDeleteMetricRule();
+
+  const allRules = query.data?.data ?? [];
+  const loading = query.isLoading;
+  const isSaving = createMutation.isPending || updateMutation.isPending;
+
   const [vehicleFilter, setVehicleFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [editTarget, setEditTarget] = useState<MetricPricingRule | null>(null);
-  const loading = false;
-  const isSaving = false;
 
   const filtered = useMemo(() => {
-    return data.filter((r) => {
+    return allRules.filter((r) => {
       const matchVehicle = !vehicleFilter || r.vehicle_type === vehicleFilter;
       const matchCity = !cityFilter || (cityFilter === "global" ? r.city_id === null : r.city_id === cityFilter);
       return matchVehicle && matchCity;
     });
-  }, [data, vehicleFilter, cityFilter]);
+  }, [allRules, vehicleFilter, cityFilter]);
 
   const stats = useMemo(
     () => ({
-      total: data.length,
-      active: data.filter((r) => r.is_active).length,
-      global: data.filter((r) => r.city_id === null).length,
-      cities: new Set(data.filter((r) => r.city_id !== null).map((r) => r.city_id)).size,
+      total: allRules.length,
+      active: allRules.filter((r) => r.is_active).length,
+      global: allRules.filter((r) => r.city_id === null).length,
+      cities: new Set(allRules.filter((r) => r.city_id !== null).map((r) => r.city_id)).size,
     }),
-    [data],
+    [allRules],
   );
 
-  const openCreate = (): void => {
-    setEditTarget(null);
-    setModal("create");
-  };
-
-  const openEdit = (rule: MetricPricingRule): void => {
-    setEditTarget(rule);
-    setModal("edit");
-  };
-
-  const closeModal = (): void => {
-    setModal(null);
-    setEditTarget(null);
-  };
+  const openCreate = (): void => { setEditTarget(null); setModal("create"); };
+  const openEdit = (rule: MetricPricingRule): void => { setEditTarget(rule); setModal("edit"); };
+  const closeModal = (): void => { setModal(null); setEditTarget(null); };
 
   const handleSubmit = (values: CreateMetricDto | CreateZoneDto): void => {
     const payload = values as CreateMetricDto;
-    const now = new Date().toISOString();
     if (modal === "edit" && editTarget) {
-      // swap with real mutation: useUpdateMetricRule().mutate({ id: editTarget.id, payload })
-      setData((prev) =>
-        prev.map((r) => (r.id === editTarget.id ? { ...r, ...payload, updated_at: now } : r)),
-      );
+      updateMutation.mutate({ id: editTarget.id, payload });
     } else {
-      // swap with real mutation: useCreateMetricRule().mutate(payload)
-      const newRule: MetricPricingRule = {
-        ...payload,
-        id: genMetricId(),
-        is_active: true,
-        created_by: "adm_001",
-        created_at: now,
-        updated_at: now,
-      };
-      setData((prev) => [newRule, ...prev]);
+      createMutation.mutate(payload);
     }
     closeModal();
   };
 
-  const handleToggleActive = (id: string): void => {
-    // swap with real mutation: useDeleteMetricRule() (soft delete) / useUpdateMetricRule() to reactivate
-    setData((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, is_active: !r.is_active, updated_at: new Date().toISOString() } : r)),
-    );
+  const handleToggleActive = (rule: MetricPricingRule): void => {
+    if (rule.is_active) {
+      deleteMutation.mutate(rule.id);
+    } else {
+      updateMutation.mutate({ id: rule.id, payload: { is_active: true } as Partial<CreateMetricDto> });
+    }
   };
 
   const columns: ColumnDef<MetricPricingRule, unknown>[] = [
@@ -185,8 +171,8 @@ export default function MetricPricingView(): React.ReactNode {
               </svg>
             </button>
             <button
-              onClick={() => handleToggleActive(rule.id)}
-              title={rule.is_active ? "Deactivate (soft delete)" : "Reactivate"}
+              onClick={() => handleToggleActive(rule)}
+              title={rule.is_active ? "Deactivate" : "Reactivate"}
               className={cn(
                 "rounded-md p-1.5 transition-colors",
                 rule.is_active
@@ -217,7 +203,6 @@ export default function MetricPricingView(): React.ReactNode {
 
   return (
     <div className="space-y-5">
-      {/* Stats strip */}
       <div className="grid grid-cols-4 gap-3">
         {[
           { label: "Total Rules", value: stats.total, color: "text-gray-900", bg: "bg-gray-50" },
@@ -232,7 +217,6 @@ export default function MetricPricingView(): React.ReactNode {
         ))}
       </div>
 
-      {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
         <FilterDropdown
           options={VEHICLE_TYPE_FILTERS}
@@ -243,10 +227,7 @@ export default function MetricPricingView(): React.ReactNode {
         <FilterDropdown options={CITY_FILTERS} value={cityFilter} onChange={setCityFilter} placeholder="City" />
         {(vehicleFilter || cityFilter) && (
           <button
-            onClick={() => {
-              setVehicleFilter("");
-              setCityFilter("");
-            }}
+            onClick={() => { setVehicleFilter(""); setCityFilter(""); }}
             className="text-xs text-blue-600 hover:underline"
           >
             Clear filters
@@ -264,10 +245,8 @@ export default function MetricPricingView(): React.ReactNode {
         </button>
       </div>
 
-      {/* Table */}
       <DataTable<MetricPricingRule> data={filtered} columns={columns} loading={loading} pageSize={10} />
 
-      {/* Modal */}
       {(modal === "create" || modal === "edit") && (
         <PricingRuleForm
           type="metric"

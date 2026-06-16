@@ -1,36 +1,39 @@
-import { useState } from "react";
-import { ThresholdConfig, ThresholdForm } from "../type/ratings";
+"use client";
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-NG", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
+import { useEffect, useState } from "react";
+import { formatDate } from "@/utils/format-date";
+import { ThresholdConfig, ThresholdForm } from "../type/ratings";
+import AppInput from "@/shared/common/AppInput";
 
 function ThresholdConfigForm({
   thresholds,
+  isLoading = false,
   onSave,
 }: {
   thresholds: ThresholdConfig[];
+  isLoading?: boolean;
   onSave: (id: string, body: Partial<ThresholdConfig>) => void;
 }): React.ReactNode {
-  const [forms, setForms] = useState<Record<string, ThresholdForm>>(
-    Object.fromEntries(
-      thresholds.map((t) => [
-        t.id,
-        {
-          ratee_type: t.ratee_type,
-          threshold: t.threshold,
-          min_ratings: t.min_ratings,
-          notify_email: t.notify_email,
-          notify_dashboard: t.notify_dashboard,
-        },
-      ]),
-    ),
-  );
+  const [forms, setForms] = useState<Record<string, ThresholdForm>>({});
   const [savedId, setSavedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (thresholds.length === 0) return;
+    setForms(
+      Object.fromEntries(
+        thresholds.map((t) => [
+          t.id,
+          {
+            ratee_type: t.ratee_type,
+            threshold: t.threshold,
+            min_ratings: t.min_ratings,
+            notify_email: t.notify_email,
+            notify_dashboard: t.notify_dashboard,
+          },
+        ]),
+      ),
+    );
+  }, [thresholds]);
 
   const setField = <K extends keyof ThresholdForm>(
     id: string,
@@ -48,6 +51,22 @@ function ThresholdConfigForm({
     setSavedId(id);
     setTimeout(() => setSavedId(null), 3000);
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[0, 1].map((i) => (
+          <div key={i} className="h-52 animate-pulse rounded-xl border border-gray-100 bg-gray-50" />
+        ))}
+      </div>
+    );
+  }
+
+  if (thresholds.length === 0) {
+    return (
+      <p className="py-8 text-center text-sm text-gray-400">No threshold configurations found.</p>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -98,7 +117,7 @@ function ThresholdConfigForm({
                 <label className="mb-1.5 block text-xs font-medium text-gray-700">
                   Min ratings required
                 </label>
-                <input
+                <AppInput
                   type="number"
                   min="1"
                   value={f.min_ratings}

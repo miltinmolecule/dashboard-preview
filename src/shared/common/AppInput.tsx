@@ -13,7 +13,7 @@ interface AppInputProps extends PrefixProps {
   placeholder?: string;
   value?: string | number;
   inputRender?: "normal" | "textarea";
-  type?: "text" | "password" | "email" | "date" | "file" | "textarea";
+  type?: "text" | "password" | "email" | "date" | "file" | "textarea" | "number";
   inputWrapper?: string;
   wrapperClass?: string;
   startContent?: React.ReactNode;
@@ -60,7 +60,7 @@ const AppInput = ({
       {label && (
         <label
           htmlFor={name}
-          className="text-sm flex mb-2 
+          className="text-sm flex mb-2 text-gray-600
         "
         >
           {label}
