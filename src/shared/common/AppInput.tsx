@@ -60,7 +60,7 @@ const AppInput = ({
       {label && (
         <label
           htmlFor={name}
-          className="text-sm flex mb-2 
+          className="text-sm flex mb-2 text-gray-600
         "
         >
           {label}

@@ -141,18 +141,29 @@ export const API_URLS = {
 
   // Notifications
   NOTIFICATIONS: {
-    LIST: `${BASE}/notifications`,
-    BROADCAST: `${BASE}/notifications/broadcast`,
+    LIST:   `${BASE}/admin/notifications`,
+    DETAIL: (id: string) => `${BASE}/admin/notifications/${id}`,
+    CANCEL: (id: string) => `${BASE}/admin/notifications/${id}/cancel`,
+    STATS:  (id: string) => `${BASE}/admin/notifications/${id}/stats`,
   },
 
   // Audit Logs
   LOGS: {
-    LIST: `${BASE}/logs`,
+    LIST:          `${BASE}/admin/audit`,
+    DETAIL:        (id: string) => `${BASE}/admin/audit/${id}`,
+    EXPORT:        `${BASE}/admin/audit/export`,
+    EXPORT_DETAIL: (id: string) => `${BASE}/admin/audit/export/${id}`,
   },
 
   // Admin Management
   ADMINS: {
-    LIST: `${BASE}/admins`,
-    DETAIL: (id: string) => `${BASE}/admins/${id}`,
+    LIST:               `${BASE}/admin/admins`,
+    DETAIL:             (id: string) => `${BASE}/admin/admins/${id}`,
+    CREATE:             `${BASE}/admin/admins`,
+    DEACTIVATE:         (id: string) => `${BASE}/admin/admins/${id}/deactivate`,
+    REACTIVATE:         (id: string) => `${BASE}/admin/admins/${id}/reactivate`,
+    RESET_PASSWORD:     (id: string) => `${BASE}/admin/admins/${id}/reset-password`,
+    PERMISSIONS:        (id: string) => `${BASE}/admin/admins/${id}/permissions`,
+    ACTIVITY:           `${BASE}/admin/admins/activity`,
   },
 } as const;
