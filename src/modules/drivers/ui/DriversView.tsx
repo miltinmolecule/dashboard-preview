@@ -616,16 +616,15 @@ export default function DriversView(): React.ReactNode {
     });
   }, [driverData, search, kycFilter, statusFilter]);
 
-  const stats = useMemo(
-    () => ({
-      total: driverData.length,
-      active: driverData.filter((d) => d.accountStatus === "active").length,
-      pendingKyc: driverData.filter((d) => d.kycStatus === "pending").length,
-      suspended: driverData.filter((d) => d.accountStatus === "suspended")
-        .length,
-    }),
-    [driverData],
-  );
+  const stats = useMemo(() => {
+    let active = 0, pendingKyc = 0, suspended = 0;
+    for (const d of driverData) {
+      if (d.accountStatus === "active") active++;
+      if (d.accountStatus === "suspended") suspended++;
+      if (d.kycStatus === "pending") pendingKyc++;
+    }
+    return { total: driverData.length, active, pendingKyc, suspended };
+  }, [driverData]);
 
   const applyAction = useCallback(
     (

@@ -4,27 +4,11 @@ import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/utils/cn";
+import { NAV_GROUPS } from "@/shared/common/Sidebar";
 
-const ROUTE_LABELS: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/users": "User Management",
-  "/drivers": "Driver Management",
-  "/ride-and-trips": "Rides & Trips",
-  "/vehicles": "Vehicles",
-  "/payments": "Payments",
-  "/promotions": "Promotions",
-  "/earnings": "Earnings",
-  "/pricing": "Pricing",
-  "/complaints-and-disputes": "Complaints & Disputes",
-  "/ratings-and-reviews": "Ratings & Reviews",
-  "/support": "Support",
-  "/analytics-and-reports": "Analytics & Reports",
-  "/notifications": "Notifications",
-  "/admin-management": "Admin Management",
-  "/zones-and-regions": "Zones & Regions",
-  "/settings": "Settings",
-  "/logs": "Audit Logs",
-};
+const ROUTE_LABELS: Record<string, string> = Object.fromEntries(
+  NAV_GROUPS.flatMap((g) => g.items).map((item) => [item.href, item.label]),
+);
 
 export default function Topbar(): React.ReactNode {
   const { data: session } = useSession();

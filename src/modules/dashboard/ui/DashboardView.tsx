@@ -82,8 +82,6 @@ export default function DashboardView(): React.ReactNode {
   const [filter, setFilter] = useState<TimeFilter>("7d");
   const loading = false; // swap with real query: useDashboardStats(filter).isLoading
 
-  const stats = MOCK_STATS;
-
   return (
     <div className="space-y-6">
       {/* Page header */}
@@ -122,9 +120,9 @@ export default function DashboardView(): React.ReactNode {
           <>
             <StatCard
               title="Total Users"
-              value={formatNumber(stats.totalUsers)}
+              value={formatNumber(MOCK_STATS.totalUsers)}
               trend="up"
-              trendValue={`${stats.userGrowth}%`}
+              trendValue={`${MOCK_STATS.userGrowth}%`}
               description="vs last period"
               iconBg="bg-blue-50"
               onClick={() => router.push("/users")}
@@ -137,9 +135,9 @@ export default function DashboardView(): React.ReactNode {
             />
             <StatCard
               title="Total Drivers"
-              value={formatNumber(stats.totalDrivers)}
+              value={formatNumber(MOCK_STATS.totalDrivers)}
               trend="up"
-              trendValue={`${stats.driverGrowth}%`}
+              trendValue={`${MOCK_STATS.driverGrowth}%`}
               description="vs last period"
               iconBg="bg-violet-50"
               onClick={() => router.push("/drivers")}
@@ -152,7 +150,7 @@ export default function DashboardView(): React.ReactNode {
             />
             <StatCard
               title="Active Rides"
-              value={formatNumber(stats.activeRides)}
+              value={formatNumber(MOCK_STATS.activeRides)}
               trend="neutral"
               trendValue="Live"
               description="right now"
@@ -166,9 +164,9 @@ export default function DashboardView(): React.ReactNode {
             />
             <StatCard
               title="Total Revenue"
-              value={formatRevenue(stats.totalRevenue)}
+              value={formatRevenue(MOCK_STATS.totalRevenue)}
               trend="up"
-              trendValue={`${stats.revenueGrowth}%`}
+              trendValue={`${MOCK_STATS.revenueGrowth}%`}
               description="vs last period"
               iconBg="bg-amber-50"
               onClick={() => router.push("/payments")}
@@ -181,9 +179,9 @@ export default function DashboardView(): React.ReactNode {
             />
             <StatCard
               title="Completed Rides"
-              value={formatNumber(stats.completedRides)}
+              value={formatNumber(MOCK_STATS.completedRides)}
               trend="up"
-              trendValue={`${stats.ridesGrowth}%`}
+              trendValue={`${MOCK_STATS.ridesGrowth}%`}
               description="vs last period"
               iconBg="bg-teal-50"
               icon={
@@ -194,7 +192,7 @@ export default function DashboardView(): React.ReactNode {
             />
             <StatCard
               title="Online Drivers"
-              value={formatNumber(stats.onlineDrivers)}
+              value={formatNumber(MOCK_STATS.onlineDrivers)}
               trend="neutral"
               trendValue="Live"
               description="currently active"
@@ -208,8 +206,8 @@ export default function DashboardView(): React.ReactNode {
             />
             <StatCard
               title="Pending KYC"
-              value={formatNumber(stats.pendingKyc)}
-              trend={stats.pendingKyc > 50 ? "down" : "neutral"}
+              value={formatNumber(MOCK_STATS.pendingKyc)}
+              trend={MOCK_STATS.pendingKyc > 50 ? "down" : "neutral"}
               trendValue="Pending"
               description="awaiting review"
               iconBg="bg-orange-50"
@@ -223,9 +221,9 @@ export default function DashboardView(): React.ReactNode {
             />
             <StatCard
               title="Active Incidents"
-              value={formatNumber(stats.activeIncidents)}
-              trend={stats.activeIncidents > 10 ? "down" : "neutral"}
-              trendValue={stats.activeIncidents > 10 ? "High" : "Normal"}
+              value={formatNumber(MOCK_STATS.activeIncidents)}
+              trend={MOCK_STATS.activeIncidents > 10 ? "down" : "neutral"}
+              trendValue={MOCK_STATS.activeIncidents > 10 ? "High" : "Normal"}
               description="open support cases"
               iconBg="bg-red-50"
               onClick={() => router.push("/complaints-and-disputes")}

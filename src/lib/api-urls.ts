@@ -28,13 +28,13 @@ export const API_URLS = {
   // Drivers
   DRIVERS: {
     LIST: `${BASE}/admin/drivers`,
-    DETAIL: (id: string) => `${BASE}/drivers/${id}`,
-    APPROVE: (id: string) => `${BASE}/drivers/${id}/approve`,
-    REJECT: (id: string) => `${BASE}/drivers/${id}/reject`,
-    SUSPEND: (id: string) => `${BASE}/drivers/${id}/suspend`,
-    REACTIVATE: (id: string) => `${BASE}/drivers/${id}/reactivate`,
-    BULK_APPROVE: `${BASE}/drivers/bulk-approve`,
-    BULK_SUSPEND: `${BASE}/drivers/bulk-suspend`,
+    DETAIL: (id: string) => `${BASE}/admin/drivers/${id}`,
+    APPROVE: (id: string) => `${BASE}/admin/drivers/${id}/approve`,
+    REJECT: (id: string) => `${BASE}/admin/drivers/${id}/reject`,
+    SUSPEND: (id: string) => `${BASE}/admin/drivers/${id}/suspend`,
+    REACTIVATE: (id: string) => `${BASE}/admin/drivers/${id}/reactivate`,
+    BULK_APPROVE: `${BASE}/admin/drivers/bulk-approve`,
+    BULK_SUSPEND: `${BASE}/admin/drivers/bulk-suspend`,
   },
 
   // Rides
@@ -64,6 +64,64 @@ export const API_URLS = {
     DETAIL: (id: string) => `${BASE}/payments/${id}`,
     REFUND: (id: string) => `${BASE}/payments/${id}/refund`,
     PAYOUTS: `${BASE}/payments/payouts`,
+  },
+
+  // Earnings & Payouts
+  EARNINGS: {
+    SUMMARY: `${BASE}/earnings/summary`,
+    DRIVERS: `${BASE}/earnings/drivers`,
+    DRIVER_DETAIL: (id: string) => `${BASE}/earnings/drivers/${id}`,
+    PAYOUTS: `${BASE}/earnings/payouts`,
+    PAYOUT_DETAIL: (id: string) => `${BASE}/earnings/payouts/${id}`,
+    PAYOUT_APPROVE: (id: string) => `${BASE}/earnings/payouts/${id}/approve`,
+    PAYOUT_PROCESS: (id: string) => `${BASE}/earnings/payouts/${id}/process`,
+    PAYOUT_MARK_PAID: (id: string) => `${BASE}/earnings/payouts/${id}/mark-paid`,
+    PAYOUT_BULK_APPROVE: `${BASE}/earnings/payouts/bulk-approve`,
+  },
+
+  // Promotions, Discount Codes & Referrals
+  PROMOTIONS: {
+    LIST: `${BASE}/promotions`,
+    DETAIL: (id: string) => `${BASE}/promotions/${id}`,
+    STATUS: (id: string) => `${BASE}/promotions/${id}/status`,
+
+    DISCOUNT_CODES: `${BASE}/promotions/discount-codes`,
+    DISCOUNT_CODE_DETAIL: (id: string) => `${BASE}/promotions/discount-codes/${id}`,
+    DISCOUNT_CODE_STATUS: (id: string) => `${BASE}/promotions/discount-codes/${id}/status`,
+
+    REFERRAL_PROGRAM: `${BASE}/promotions/referrals/program`,
+    REFERRAL_ACTIVITY: `${BASE}/promotions/referrals/activity`,
+  },
+  
+  // Pricing — Metric, Zone, Surge, History & Simulation
+  PRICING: {
+    METRIC: `${BASE}/admin/pricing/metric`,
+    METRIC_DETAIL: (id: string) => `${BASE}/admin/pricing/metric/${id}`,
+
+    ZONE: `${BASE}/admin/pricing/zone`,
+    ZONE_DETAIL: (id: string) => `${BASE}/admin/pricing/zone/${id}`,
+
+    SURGE: `${BASE}/admin/pricing/surge`,
+    SURGE_DETAIL: (id: string) => `${BASE}/admin/pricing/surge/${id}`,
+    SURGE_TOGGLE: (id: string) => `${BASE}/admin/pricing/surge/${id}/toggle`,
+
+    HISTORY: `${BASE}/admin/pricing/history`,
+    SIMULATE: `${BASE}/admin/pricing/simulate`,
+  },
+
+  // Ratings & Reviews
+  RATINGS: {
+    LIST:             `${BASE}/admin/ratings`,
+    FLAG:             (id: string) => `${BASE}/admin/ratings/${id}/flag`,
+    REMOVE:           (id: string) => `${BASE}/admin/ratings/${id}/remove`,
+    RESTORE:          (id: string) => `${BASE}/admin/ratings/${id}/restore`,
+    RESPOND:          (id: string) => `${BASE}/admin/ratings/${id}/respond`,
+    STATS:            (type: string, id: string) => `${BASE}/admin/ratings/stats/${type}/${id}`,
+    LEADERBOARD:      `${BASE}/admin/ratings/leaderboard`,
+    THRESHOLDS:       `${BASE}/admin/ratings/thresholds`,
+    THRESHOLD_DETAIL: (id: string) => `${BASE}/admin/ratings/thresholds/${id}`,
+    ALERTS:           `${BASE}/admin/ratings/alerts`,
+    ALERT_DISMISS:    (id: string) => `${BASE}/admin/ratings/alerts/${id}/dismiss`,
   },
 
   // Analytics

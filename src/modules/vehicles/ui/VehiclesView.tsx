@@ -13,7 +13,7 @@ import DashboardHeader from "@/shared/cards/DashboardHeader";
 import { cn } from "@/utils/cn";
 import { MOCK_VEHICLES } from "../data/mock";
 import { useVehiclesRealtime } from "../hooks/useVehiclesRealtime";
-import { simulateVehicleEvents } from "@/lib/socket";
+import { simulateVehicleEvents } from "@/modules/vehicles/lib/simulate-vehicle-events";
 import VehicleQuickModal from "./VehicleQuickModal";
 import type { Vehicle } from "../services/vehicles.service";
 
@@ -170,17 +170,15 @@ export default function VehiclesView(): React.ReactNode {
     });
   }, [vehicles, search, statusFilter, verFilter, typeFilter]);
 
-  const stats = useMemo(
-    () => ({
-      total: vehicles.length,
-      active: vehicles.filter((v) => v.status === "active").length,
-      pendingVerification: vehicles.filter(
-        (v) => v.verificationStatus === "pending",
-      ).length,
-      suspended: vehicles.filter((v) => v.status === "suspended").length,
-    }),
-    [vehicles],
-  );
+  const stats = useMemo(() => {
+    let active = 0, pendingVerification = 0, suspended = 0;
+    for (const v of vehicles) {
+      if (v.status === "active") active++;
+      if (v.status === "suspended") suspended++;
+      if (v.verificationStatus === "pending") pendingVerification++;
+    }
+    return { total: vehicles.length, active, pendingVerification, suspended };
+  }, [vehicles]);
 
   const applyAction = useCallback(
     (

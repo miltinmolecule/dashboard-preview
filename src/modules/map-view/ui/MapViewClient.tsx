@@ -72,6 +72,40 @@ const INCIDENT_SYMBOL: Record<string, string> = {
   suspicious_cancellations: "⚠",
 };
 
+// ── Drawer constants (module scope — not rebuilt per render) ───────────────────
+const STATUS_LABEL: Record<DriverStatus, string> = {
+  available: "Available",
+  on_trip:   "On Trip",
+  offline:   "Offline",
+  suspended: "Suspended",
+  emergency: "Emergency",
+};
+const STATUS_BG: Record<DriverStatus, string> = {
+  available: "bg-emerald-50 text-emerald-700",
+  on_trip:   "bg-blue-50 text-blue-700",
+  offline:   "bg-gray-100 text-gray-500",
+  suspended: "bg-orange-50 text-orange-700",
+  emergency: "bg-red-50 text-red-700",
+};
+
+const INCIDENT_LABELS: Record<string, string> = {
+  passenger_emergency:      "Passenger Emergency",
+  driver_emergency:         "Driver Emergency",
+  route_deviation:          "Route Deviation",
+  prolonged_stop:           "Prolonged Stop",
+  suspicious_cancellations: "Suspicious Cancellations",
+};
+const SEV_STYLE: Record<string, string> = {
+  high:   "bg-red-50 text-red-700 border border-red-200",
+  medium: "bg-orange-50 text-orange-700 border border-orange-200",
+  low:    "bg-yellow-50 text-yellow-700 border border-yellow-200",
+};
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function filterByCountry<T extends { country: string }>(arr: T[], code: string): T[] {
+  return code === "all" ? arr : arr.filter((item) => item.country === code);
+}
+
 // ── Icon factories ─────────────────────────────────────────────────────────────
 function makeDriverIcon(driver: LiveDriver): L.DivIcon {
   const color = DRIVER_COLOR[driver.status];
@@ -184,20 +218,6 @@ function DriverDrawer({
   const initials = driver.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const color = DRIVER_COLOR[driver.status];
 
-  const STATUS_LABEL: Record<DriverStatus, string> = {
-    available: "Available",
-    on_trip:   "On Trip",
-    offline:   "Offline",
-    suspended: "Suspended",
-    emergency: "Emergency",
-  };
-  const STATUS_BG: Record<DriverStatus, string> = {
-    available: "bg-emerald-50 text-emerald-700",
-    on_trip:   "bg-blue-50 text-blue-700",
-    offline:   "bg-gray-100 text-gray-500",
-    suspended: "bg-orange-50 text-orange-700",
-    emergency: "bg-red-50 text-red-700",
-  };
 
   return (
     <div
@@ -322,18 +342,6 @@ function IncidentDrawer({
   incident: Incident;
   onClose: () => void;
 }): React.ReactNode {
-  const LABELS: Record<string, string> = {
-    passenger_emergency:      "Passenger Emergency",
-    driver_emergency:         "Driver Emergency",
-    route_deviation:          "Route Deviation",
-    prolonged_stop:           "Prolonged Stop",
-    suspicious_cancellations: "Suspicious Cancellations",
-  };
-  const SEV_STYLE: Record<string, string> = {
-    high:   "bg-red-50 text-red-700 border border-red-200",
-    medium: "bg-orange-50 text-orange-700 border border-orange-200",
-    low:    "bg-yellow-50 text-yellow-700 border border-yellow-200",
-  };
 
   return (
     <div
@@ -342,7 +350,7 @@ function IncidentDrawer({
     >
       <div className="flex items-start justify-between p-4 border-b border-gray-100">
         <div>
-          <p className="text-sm font-semibold text-gray-900">{LABELS[incident.type]}</p>
+          <p className="text-sm font-semibold text-gray-900">{INCIDENT_LABELS[incident.type]}</p>
           <p className="text-xs font-mono text-gray-400 mt-0.5">{incident.id}</p>
         </div>
         <button onClick={onClose} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 transition-colors">
@@ -395,58 +403,51 @@ export default function MapViewClient(): React.ReactNode {
   const [selectedDriver, setSelectedDriver] = useState<LiveDriver | null>(null);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
 
-  const countryConfig: CountryConfig | undefined = useMemo(
-    () => (selectedCountry === "all" ? undefined : getCountry(selectedCountry)),
-    [selectedCountry]
-  );
-
-  const flyTarget = useMemo((): { center: [number, number]; zoom: number } => {
-    return countryConfig
-      ? { center: countryConfig.center, zoom: countryConfig.zoom }
-      : ALL_COUNTRIES_VIEW;
-  }, [countryConfig]);
+  const { countryConfig, flyTarget } = useMemo(() => {
+    const config = selectedCountry === "all" ? undefined : getCountry(selectedCountry);
+    return {
+      countryConfig: config,
+      flyTarget: config
+        ? { center: config.center, zoom: config.zoom }
+        : ALL_COUNTRIES_VIEW,
+    };
+  }, [selectedCountry]);
 
   const currencySymbol = countryConfig?.currencySymbol ?? "";
 
   // Filter all data by selected country
-  const filteredDrivers = useMemo(() => {
-    const byCountry = selectedCountry === "all"
-      ? MOCK_DRIVERS
-      : MOCK_DRIVERS.filter((d) => d.country === selectedCountry);
-    return statusFilter === "all" ? byCountry : byCountry.filter((d) => d.status === statusFilter);
-  }, [selectedCountry, statusFilter]);
-
+  const driversByCountry = useMemo(
+    () => filterByCountry(MOCK_DRIVERS, selectedCountry),
+    [selectedCountry],
+  );
+  const filteredDrivers = useMemo(
+    () => statusFilter === "all" ? driversByCountry : driversByCountry.filter((d) => d.status === statusFilter),
+    [driversByCountry, statusFilter],
+  );
   const filteredTrips = useMemo(
-    () => selectedCountry === "all" ? MOCK_ACTIVE_TRIPS : MOCK_ACTIVE_TRIPS.filter((t) => t.country === selectedCountry),
-    [selectedCountry]
+    () => filterByCountry(MOCK_ACTIVE_TRIPS, selectedCountry),
+    [selectedCountry],
   );
-
   const filteredIncidents = useMemo(
-    () => selectedCountry === "all" ? MOCK_INCIDENTS : MOCK_INCIDENTS.filter((i) => i.country === selectedCountry),
-    [selectedCountry]
+    () => filterByCountry(MOCK_INCIDENTS, selectedCountry),
+    [selectedCountry],
   );
-
   const filteredHeatmap = useMemo(
-    () => selectedCountry === "all" ? MOCK_HEATMAP_POINTS : MOCK_HEATMAP_POINTS.filter((p) => p.country === selectedCountry),
-    [selectedCountry]
+    () => filterByCountry(MOCK_HEATMAP_POINTS, selectedCountry),
+    [selectedCountry],
   );
-
   const filteredZones = useMemo(
-    () => selectedCountry === "all" ? MOCK_ZONES : MOCK_ZONES.filter((z) => z.country === selectedCountry),
-    [selectedCountry]
+    () => filterByCountry(MOCK_ZONES, selectedCountry),
+    [selectedCountry],
   );
 
   const stats = useMemo(() => {
-    const pool = selectedCountry === "all" ? MOCK_DRIVERS : MOCK_DRIVERS.filter((d) => d.country === selectedCountry);
-    return {
-      available:   pool.filter((d) => d.status === "available").length,
-      on_trip:     pool.filter((d) => d.status === "on_trip").length,
-      offline:     pool.filter((d) => d.status === "offline").length,
-      emergency:   pool.filter((d) => d.status === "emergency").length,
-      activeTrips: filteredTrips.length,
-      incidents:   filteredIncidents.length,
-    };
-  }, [selectedCountry, filteredTrips, filteredIncidents]);
+    const counts = { available: 0, on_trip: 0, offline: 0, emergency: 0 };
+    for (const d of driversByCountry) {
+      if (d.status in counts) counts[d.status as keyof typeof counts]++;
+    }
+    return { ...counts, activeTrips: filteredTrips.length, incidents: filteredIncidents.length };
+  }, [driversByCountry, filteredTrips, filteredIncidents]);
 
   const toggleLayer = (layer: ActiveLayer): void => {
     setActiveLayers((prev) => {

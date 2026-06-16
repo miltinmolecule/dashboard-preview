@@ -7,8 +7,8 @@ import StatusBadge from "@/shared/common/StatusBadge";
 import SearchInput from "@/shared/forms/SearchInput";
 import FilterDropdown from "@/shared/forms/FilterDropdown";
 import ModalWrapper from "@/shared/modals/ModalWrapper";
-import { Skeleton } from "@/shared/loaders/LoadingSkeleton";
 import { cn } from "@/utils/cn";
+import { formatDate } from "@/utils/format-date";
 import type { Region, RegionStatus } from "../services/region.service";
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
@@ -30,10 +30,6 @@ const MOCK_REGIONS: Region[] = [
 
 function genId(): string {
   return `reg_${Date.now().toString(36)}`;
-}
-
-function formatDate(d: string): string {
-  return new Date(d).toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 // ─── Region Form Modal ─────────────────────────────────────────────────────
@@ -172,9 +168,7 @@ export default function RegionsView(): React.ReactNode {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [countryFilter, setCountryFilter] = useState("");
-  const [modal, setModal] = useState<"create" | "edit" | null>(null);
-  const [editTarget, setEditTarget] = useState<Region | null>(null);
-  const loading = false;
+  const [modalRegion, setModalRegion] = useState<Region | "create" | null>(null);
 
   const countryOptions = useMemo(
     () =>
@@ -194,19 +188,15 @@ export default function RegionsView(): React.ReactNode {
     });
   }, [data, search, statusFilter, countryFilter]);
 
-  const stats = useMemo(
-    () => ({
-      total: data.length,
-      active: data.filter((r) => r.status === "active").length,
-      inactive: data.filter((r) => r.status === "inactive").length,
-    }),
-    [data],
-  );
+  const stats = useMemo(() => {
+    let active = 0;
+    for (const r of data) {
+      if (r.status === "active") active++;
+    }
+    return { total: data.length, active, inactive: data.length - active };
+  }, [data]);
 
-  const openEdit = (region: Region): void => {
-    setEditTarget(region);
-    setModal("edit");
-  };
+  const openEdit = (region: Region): void => setModalRegion(region);
 
   const handleToggleStatus = (id: string): void => {
     setData((prev) =>
@@ -227,8 +217,7 @@ export default function RegionsView(): React.ReactNode {
       };
       setData((prev) => [newRegion, ...prev]);
     }
-    setModal(null);
-    setEditTarget(null);
+    setModalRegion(null);
   };
 
   const columns: ColumnDef<Region, unknown>[] = [
@@ -312,23 +301,16 @@ export default function RegionsView(): React.ReactNode {
     <div className="space-y-5">
       {/* Stats strip */}
       <div className="grid grid-cols-3 gap-3">
-        {loading
-          ? Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
-                <Skeleton className="h-3 w-20 mb-2" />
-                <Skeleton className="h-6 w-10" />
-              </div>
-            ))
-          : [
-              { label: "Total Regions", value: stats.total, color: "text-gray-900" },
-              { label: "Active", value: stats.active, color: "text-emerald-700" },
-              { label: "Inactive", value: stats.inactive, color: "text-gray-500" },
-            ].map((s) => (
-              <div key={s.label} className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
-                <p className="text-xs text-gray-500">{s.label}</p>
-                <p className={cn("mt-1 text-xl font-bold", s.color)}>{s.value}</p>
-              </div>
-            ))}
+        {[
+          { label: "Total Regions", value: stats.total, color: "text-gray-900" },
+          { label: "Active", value: stats.active, color: "text-emerald-700" },
+          { label: "Inactive", value: stats.inactive, color: "text-gray-500" },
+        ].map((s) => (
+          <div key={s.label} className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+            <p className="text-xs text-gray-500">{s.label}</p>
+            <p className={cn("mt-1 text-xl font-bold", s.color)}>{s.value}</p>
+          </div>
+        ))}
       </div>
 
       {/* Toolbar */}
@@ -361,7 +343,7 @@ export default function RegionsView(): React.ReactNode {
         )}
         <span className="ml-auto text-xs text-gray-400">{filtered.length} results</span>
         <button
-          onClick={() => setModal("create")}
+          onClick={() => setModalRegion("create")}
           className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -375,15 +357,14 @@ export default function RegionsView(): React.ReactNode {
       <DataTable<Region>
         data={filtered}
         columns={columns}
-        loading={loading}
+        loading={false}
         pageSize={10}
       />
 
-      {/* Modal */}
-      {(modal === "create" || modal === "edit") && (
+      {modalRegion !== null && (
         <RegionFormModal
-          region={modal === "edit" ? editTarget : null}
-          onClose={() => { setModal(null); setEditTarget(null); }}
+          region={modalRegion === "create" ? null : modalRegion}
+          onClose={() => setModalRegion(null)}
           onSave={handleSave}
         />
       )}

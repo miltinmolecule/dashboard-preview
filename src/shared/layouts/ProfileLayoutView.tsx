@@ -13,28 +13,29 @@ import type {
 } from "@/shared/profile/types";
 import DashboardHeader from "@/shared/cards/DashboardHeader";
 
-const SEGMENT_LABELS: Record<string, string> = {
-  personal: "Profile Info",
-  verification: "Verification Info",
-  vehicle: "Vehicle Information",
-  activity: "Activity Overview",
-  rides: "Rides History",
-  transactions: "Transaction Summary",
-  logs: "User Logs",
-  settings: "Settings",
-};
-
-const SEGMENT_USER_LABELS: Record<string, string> = {
-  personal: "Personal Information",
-  verification: "Verification Info",
-  activity: "Activity Overview",
-  rides: "Rides History",
-  transactions: "Transaction Summary",
-  logs: "User Logs",
-  settings: "Settings",
-};
-
 type UserTypeProp = "driver" | "user";
+
+const SEGMENT_LABELS: Record<UserTypeProp, Record<string, string>> = {
+  driver: {
+    personal: "Profile Info",
+    verification: "Verification Info",
+    vehicle: "Vehicle Information",
+    activity: "Activity Overview",
+    rides: "Rides History",
+    transactions: "Transaction Summary",
+    logs: "User Logs",
+    settings: "Settings",
+  },
+  user: {
+    personal: "Personal Information",
+    verification: "Verification Info",
+    activity: "Activity Overview",
+    rides: "Rides History",
+    transactions: "Transaction Summary",
+    logs: "User Logs",
+    settings: "Settings",
+  },
+};
 
 function getNavItems(id: string, userType: UserTypeProp): ProfileNavItem[] {
   return userType === "user"
@@ -129,10 +130,7 @@ export default function ProfileLayoutView({
 
   const segment = pathname.split("/").pop() ?? "personal";
   const userType = profile?.userType?.toLowerCase();
-  const tabLabel =
-    userType === "user"
-      ? SEGMENT_USER_LABELS[segment]
-      : (SEGMENT_LABELS[segment] ?? "Profile");
+  const tabLabel = SEGMENT_LABELS[userType as UserTypeProp]?.[segment] ?? "Profile";
 
   return (
     <div className="space-y-4">

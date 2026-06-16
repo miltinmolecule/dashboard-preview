@@ -38,13 +38,6 @@ const PRIORITY_ORDER: Record<string, number> = {
   low: 3,
 };
 
-const PRIORITY_COLOR: Record<string, string> = {
-  critical: "text-red-700 bg-red-50 border-red-200",
-  high: "text-orange-700 bg-orange-50 border-orange-200",
-  medium: "text-amber-700 bg-amber-50 border-amber-200",
-  low: "text-gray-600 bg-gray-100 border-gray-200",
-};
-
 const PRIORITY_BADGE: Record<string, string> = {
   critical: "bg-red-50 text-red-700 border border-red-200",
   high: "bg-orange-50 text-orange-700 border border-orange-200",
@@ -104,7 +97,7 @@ function TicketDetailModal({
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="text-base font-semibold text-gray-900">{ticket.id}</h3>
             <StatusBadge status={ticket.status} />
-            <span className={cn("inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize", PRIORITY_COLOR[ticket.priority])}>
+            <span className={cn("inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize", PRIORITY_BADGE[ticket.priority])}>
               {ticket.priority}
             </span>
           </div>

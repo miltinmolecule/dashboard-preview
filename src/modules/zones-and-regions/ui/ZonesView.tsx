@@ -7,7 +7,6 @@ import StatusBadge from "@/shared/common/StatusBadge";
 import SearchInput from "@/shared/forms/SearchInput";
 import FilterDropdown from "@/shared/forms/FilterDropdown";
 import ModalWrapper from "@/shared/modals/ModalWrapper";
-import { Skeleton } from "@/shared/loaders/LoadingSkeleton";
 import { cn } from "@/utils/cn";
 import type { Zone, ZoneStatus } from "../services/zone.service";
 import type { Region } from "../services/region.service";
@@ -226,9 +225,7 @@ export default function ZonesView(): React.ReactNode {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [regionFilter, setRegionFilter] = useState("");
-  const [modal, setModal] = useState<"create" | "edit" | null>(null);
-  const [editTarget, setEditTarget] = useState<Zone | null>(null);
-  const loading = false;
+  const [modalZone, setModalZone] = useState<Zone | "create" | null>(null);
 
   const regionOptions = useMemo(
     () => REGIONS.map((r) => ({ label: `${r.name} (${r.country})`, value: r.id })),
@@ -245,20 +242,17 @@ export default function ZonesView(): React.ReactNode {
     });
   }, [data, search, statusFilter, regionFilter]);
 
-  const stats = useMemo(
-    () => ({
-      total: data.length,
-      active: data.filter((z) => z.status === "active").length,
-      inactive: data.filter((z) => z.status === "inactive").length,
-      withSurge: data.filter((z) => z.surgeMultiplier !== undefined).length,
-    }),
-    [data],
-  );
+  const stats = useMemo(() => {
+    let active = 0;
+    let withSurge = 0;
+    for (const z of data) {
+      if (z.status === "active") active++;
+      if (z.surgeMultiplier !== undefined) withSurge++;
+    }
+    return { total: data.length, active, inactive: data.length - active, withSurge };
+  }, [data]);
 
-  const openEdit = (zone: Zone): void => {
-    setEditTarget(zone);
-    setModal("edit");
-  };
+  const openEdit = (zone: Zone): void => setModalZone(zone);
 
   const handleToggleStatus = (id: string): void => {
     setData((prev) =>
@@ -291,8 +285,7 @@ export default function ZonesView(): React.ReactNode {
       };
       setData((prev) => [newZone, ...prev]);
     }
-    setModal(null);
-    setEditTarget(null);
+    setModalZone(null);
   };
 
   const columns: ColumnDef<Zone, unknown>[] = [
@@ -384,24 +377,17 @@ export default function ZonesView(): React.ReactNode {
     <div className="space-y-5">
       {/* Stats strip */}
       <div className="grid grid-cols-4 gap-3">
-        {loading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
-                <Skeleton className="h-3 w-20 mb-2" />
-                <Skeleton className="h-6 w-10" />
-              </div>
-            ))
-          : [
-              { label: "Total Zones", value: stats.total, color: "text-gray-900" },
-              { label: "Active", value: stats.active, color: "text-emerald-700" },
-              { label: "Inactive", value: stats.inactive, color: "text-gray-500" },
-              { label: "With Surge", value: stats.withSurge, color: "text-orange-700" },
-            ].map((s) => (
-              <div key={s.label} className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
-                <p className="text-xs text-gray-500">{s.label}</p>
-                <p className={cn("mt-1 text-xl font-bold", s.color)}>{s.value}</p>
-              </div>
-            ))}
+        {[
+          { label: "Total Zones", value: stats.total, color: "text-gray-900" },
+          { label: "Active", value: stats.active, color: "text-emerald-700" },
+          { label: "Inactive", value: stats.inactive, color: "text-gray-500" },
+          { label: "With Surge", value: stats.withSurge, color: "text-orange-700" },
+        ].map((s) => (
+          <div key={s.label} className="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+            <p className="text-xs text-gray-500">{s.label}</p>
+            <p className={cn("mt-1 text-xl font-bold", s.color)}>{s.value}</p>
+          </div>
+        ))}
       </div>
 
       {/* Toolbar */}
@@ -434,7 +420,7 @@ export default function ZonesView(): React.ReactNode {
         )}
         <span className="ml-auto text-xs text-gray-400">{filtered.length} results</span>
         <button
-          onClick={() => setModal("create")}
+          onClick={() => setModalZone("create")}
           className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -448,15 +434,14 @@ export default function ZonesView(): React.ReactNode {
       <DataTable<Zone>
         data={filtered}
         columns={columns}
-        loading={loading}
+        loading={false}
         pageSize={10}
       />
 
-      {/* Modal */}
-      {(modal === "create" || modal === "edit") && (
+      {modalZone !== null && (
         <ZoneFormModal
-          zone={modal === "edit" ? editTarget : null}
-          onClose={() => { setModal(null); setEditTarget(null); }}
+          zone={modalZone === "create" ? null : modalZone}
+          onClose={() => setModalZone(null)}
           onSave={handleSave}
         />
       )}
